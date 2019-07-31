@@ -1,6 +1,6 @@
 <?php
 
-namespace Agileti\IOEntity;
+namespace Dataview\IOEntity;
 
 use Illuminate\Support\ServiceProvider;
 
