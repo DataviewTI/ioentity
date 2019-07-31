@@ -1,0 +1,36 @@
+{
+  "description": "Entidade assets package for IntranetOne",
+  "license": "MIT",
+  "main": "wploader.js",
+  "name": "intranetone-entity",
+  "version": "0.0.1",
+  "maintainers": [
+    {
+      "name": "Marcelo Disconzi",
+      "email": "mdisconzi@gmail.com"
+    },
+    {
+      "name": "Thiago Brauer",
+      "email": "thiagobrauer@gmail.com"
+    },
+    {
+      "name": "Paulo Henrique Demori",
+      "email": "phdemori@gmail.com"
+    }
+  ],
+  "keywords": [
+    "Laravel",
+    "IntranetOne",
+    "Intranet CMS",
+    "Dataview",
+    "Entidade",
+    "Entity"
+  ],
+  "IODependencies": {
+    "devbridge-autocomplete": "^1.4.7",
+    "moment": "^2.21.0"
+  },
+  "ignore": [
+    "node_modules"
+  ]
+}

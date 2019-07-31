@@ -1,0 +1,29 @@
+{
+  "name": "dataview/ioentity",
+  "description": "serviço de entidades (cliente, fornecedor e funcionário) da intranetone",
+  "authors": [
+    {
+      "name": "mdisconzi",
+      "email": "mdisconzi@bitbucket.org"
+    },
+    {
+      "name": "Paulo Henrique Demori",
+      "email": "phdemori@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Dataview\\IOEntity\\": "src/"
+    }
+  },
+  "require": {
+    "dataview/intranetone": "*"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "\\Dataview\\IOEntity\\IOEntityServiceProvider"
+      ]
+    }
+  }
+}
