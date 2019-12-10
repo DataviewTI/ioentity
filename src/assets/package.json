@@ -3,7 +3,7 @@
   "license": "MIT",
   "main": "wploader.js",
   "name": "intranetone-entity",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "maintainers": [
     {
       "name": "Marcelo Disconzi",
@@ -16,6 +16,10 @@
     {
       "name": "Paulo Henrique Demori",
       "email": "phdemori@gmail.com"
+    },
+    {
+      "name": "Luis Disconzi",
+      "email": "luis@dataview.com.br"
     }
   ],
   "keywords": [
@@ -27,7 +31,7 @@
     "Entity"
   ],
   "IODependencies": {
-    "devbridge-autocomplete": "^1.4.7",
+    "devbridge-autocomplete": "^1.4.10",
     "moment": "^2.21.0"
   },
   "ignore": [
