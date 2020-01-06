@@ -11,7 +11,6 @@ class Install extends IOServiceInstallCmd
       "service"=>"entity",
       "provider"=> IOEntityServiceProvider::class,
       "seeder"=>EntitySeeder::class,
-      
     ]);
   }
 

@@ -1,0 +1,22 @@
+/* .dropzone.dz-clickable {
+  border: 2px #ccc dashed !important;
+  cursor: pointer !important;
+} */
+
+.entity-dz.dropzone {
+  overflow-y: hidden!important;
+}
+
+.entity-dz.dz-drop-files-here.dropzone.dz-clickable {
+  background: url('/io/images/entity/entity-avatar.png') no-repeat center 10px;
+  background-size:90%;
+}
+
+.entity-dz .dz-image-preview{
+  margin:0!important;
+}
+
+
+/* .dropzone.dz-clickable:hover {
+  border-color: #aaa !important;
+} */

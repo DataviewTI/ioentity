@@ -7,11 +7,14 @@
 Route::group(['prefix' => 'admin', 'middleware' => ['web','admin'], 'as' => 'admin.'],function(){
     Route::group(['prefix' => 'entity'], function () {
     Route::get('/','EntityController@index');
-    Route::get('teste', 'EntityController@teste');
+    // Route::get('teste', 'EntityController@teste');
     Route::get('list', 'EntityController@list');
+    Route::get('history/list/{id?}', 'EntityController@historyList');
     Route::get('view/{id}', 'EntityController@view');
     Route::post('create', 'EntityController@create');
+    Route::post('history/create', 'EntityController@historyCreate');
     Route::post('update/{id}', 'EntityController@update');
+    Route::post('history/update/{id}', 'EntityController@update');
     Route::get('delete/{id}', 'EntityController@delete');			
   });
 });

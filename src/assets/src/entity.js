@@ -1,126 +1,224 @@
-new IOService({
-  name: 'Entity',
-},
-  function (self) {
-    //Datatables initialization
-    self.dt = $('#default-table').DataTable({
-      ajax: self.path + '/list',
-      initComplete: function () {
-        //parent call
-        let api = this.api();
-        this.teste = 10;
-        $.fn.dataTable.defaults.initComplete(this);
-      },
-      footerCallback: function (row, data, start, end, display) {
-      },
-      columns: [
-        { data: 'id', name: 'id' },
-        { data: 'nome_fantasia', name: 'nome_fantasia' },
-        { data: 'cpf_cnpj', name: 'cpf_cnpj' },
-        { data: 'email', name: 'email' },
-        { data: 'telefone1', name: 'telefone1' },
-        { data: 'celular1', name: 'celular1' },
-        { data: 'actions', name: 'actions' }
-      ],
-      columnDefs:
-        [
-          { targets: '__dt_nome_fantasia', searchable: true, orderable: true },
+new IOService(
+  {
+    name: 'Entity',
+    dfId: 'default-form',
+    wz: $('#default-wizard').wizard()
+  },
+  self => {
+
+    setTimeout(() => {
+      self.tabs['historico'].tab.addClass('disabled')
+      self.tabs['cadastrar'].tab.on('shown.bs.tab', e => {
+        IO.active = self
+      })
+
+      self.tabs['listar'].tab.on('shown.bs.tab', e => {
+        IO.active = self
+        self.dt.ajax.reload()
+        self.dt.columns.adjust();
+      })
+
+      self.tabs['cadastrar'].tab.tab('show');
+    })
+
+    self.dt = $('#default-table')
+      .DataTable({
+        ajax: self.path + '/list',
+        initComplete: function () {
+          //parent call
+          let api = this.api();
+          this.teste = 10;
+          $.fn.dataTable.defaults.initComplete(this);
+        },
+        footerCallback: function (row, data, start, end, display) { },
+        columns: [
+          { data: 'id', name: 'id' },
+          { data: 'nome', name: 'nome' },
+          { data: 'cpf_cnpj', name: 'cpf_cnpj' },
+          { data: 'telefone1', name: 'telefone1' },
+          { data: 'celular1', name: 'celular1' },
+          { data: null, name: null },
+          { data: 'actions', name: 'actions' }
+        ],
+        columnDefs: [
+          { targets: '__dt_', width: "3%", searchable: true, orderable: true },
+          { targets: '__dt_nome', searchable: true, orderable: true, width: 'auto' },
+          { targets: '__dt_cpfcnpj', searchable: true, orderable: true, width: '10%' },
+          { targets: '__dt_telefone', searchable: true, orderable: true, width: '10%' },
+          { targets: '__dt_celular', searchable: true, orderable: true, width: '10%' },
           {
-            targets: '__dt_acoes', width: "7%", className: "text-center", searchable: false, orderable: false, render: function (data, type, row, y) {
+            targets: '__dt_s', width: "2%", orderable: true, className: "text-center", render: function (data, type, row) {
+              let color;
+              switch (row.status) {
+                case 'Ativo':
+                  color = "text-success";
+                  break
+                case 'Bloqueado':
+                  color = "text-danger";
+                  break
+                case 'Inativo':
+                default:
+                  color = "text-muted";
+                  break
+              }
+
+              return self.dt.addDTIcon({ ico: 'ico-dot', title: row.status, value: 1, pos: 'left', _class: color });
+            }
+          }, {
+            targets: '__dt_acoes',
+            width: '5%',
+            className: 'text-center',
+            searchable: false,
+            orderable: false,
+            render: function (data, type, row, y) {
               return self.dt.addDTButtons({
                 buttons: [
-                  { ico: 'ico-eye', _class: 'text-primary', title: 'preview' },
                   { ico: 'ico-edit', _class: 'text-info', title: 'editar' },
-                  { ico: 'ico-trash', _class: 'text-danger', title: 'excluir' },
+                  { ico: 'ico-trash', _class: 'text-danger', title: 'excluir' }
                 ]
               });
             }
           }
         ]
-    }).on('click', ".btn-dt-button[data-original-title=editar]", function () {
-      var data = self.dt.row($(this).parents('tr')).data();
-      self.view(data.id);
-    }).on('click', '.ico-trash', function () {
-      var data = self.dt.row($(this).parents('tr')).data();
-      self.delete(data.id);
-    }).on('click', '.ico-eye', function () {
-      var data = self.dt.row($(this).parents('tr')).data();
-      preview({ id: data.id });
-    }).on('draw.dt', function () {
-      $('[data-toggle="tooltip"]').tooltip();
-    });
+      })
+      .on('click', '.btn-dt-button[data-original-title=editar]', function () {
+        var data = self.dt.row($(this).parents('tr')).data();
+        self.view(data.id);
+      })
+      .on('click', '.ico-trash', function () {
+        var data = self.dt.row($(this).parents('tr')).data();
+        self.delete(data.id);
+      })
+      // .on('click', '.ico-eye', function () {
+      //   var data = self.dt.row($(this).parents('tr')).data();
+      //   preview({ id: data.id });
+      // })
+      .on('draw.dt', function () {
+        $('[data-toggle="tooltip"]').tooltip();
+      });
 
-    $('#dt_nascimento').pickadate({
-      selectYears: 99,
-      formatSubmit: 'yyyy-mm-dd 00:00:00',
-      max: 'today'
-    });
-
-    $('#cpf_cnpj').mask($.jMaskGlobals.CPFCNPJMaskBehavior, {
+    $('#cpf_cnpj').removeAttr('readonly').mask($.jMaskGlobals.CPFCNPJMaskBehavior, {
       onKeyPress: function (val, e, field, options) {
         var args = Array.from(arguments);
         args.push(iscpf => {
           if (self.fv !== null) {
             if (iscpf) {
-              $('.pf_container').removeClass('d-none');
-              $('.pj_container').addClass('d-none');
-              self.fv[0].disableValidator('cpf_cnpj', 'vat')
+              self.fv[0]
+                .disableValidator('cpf_cnpj', 'vat')
                 .enableValidator('cpf_cnpj', 'id')
                 .revalidateField('cpf_cnpj');
-            }
-            else {
-              $('.pf_container').addClass('d-none');
-              $('.pj_container').removeClass('d-none');
-              self.fv[0].disableValidator('cpf_cnpj', 'id')
-                .enableValidator('cpf_cnpj', 'vat')
+            } else {
+              self.fv[0]
+                .disableValidator('cpf_cnpj', 'id')
+                // .enableValidator('cpf_cnpj', 'vat')
                 .revalidateField('cpf_cnpj');
             }
           }
         });
         field.mask($.jMaskGlobals.CPFCNPJMaskBehavior.apply({}, args), options);
       },
-      onComplete: function (val, e, field) {
-      }
+      onComplete: function (val, e, field) { }
     });
 
-    $('#telefone1, #telefone2, #celular1, #celular2').mask($.jMaskGlobals.SPMaskBehavior, {
-      onKeyPress: function (val, e, field, options) {
-        if ($(field).attr('id') == 'celular1')
-          self.fv[1].revalidateField($(field).attr('id'));
-        field.mask($.jMaskGlobals.SPMaskBehavior.apply({}, arguments), options);
-      },
-      onComplete: function (val, e, field) {
-        $(field).parent().parent().next().find('input').first().focus();
-      }
+    $('#dt_nascimento').pickadate({
+      selectYears: 99,
+      formatSubmit: 'yyyy-mm-dd 00:00:00',
+      max: 'today'
+    }).pickadate('picker').on('render', function () {
+      self.fv[0].revalidateField('dt_nascimento');
     });
 
-    $('#cep').mask('00000-000');
+
+    $('#telefone1, #telefone2, #celular1, #celular2').mask(
+      $.jMaskGlobals.SPMaskBehavior,
+      {
+        onKeyPress: function (val, e, field, options) {
+          self.fv[0].revalidateField($(field).attr('id'));
+          field.mask(
+            $.jMaskGlobals.SPMaskBehavior.apply({}, arguments),
+            options
+          );
+        },
+        onComplete: function (val, e, field) {
+          $(field)
+            .parent()
+            .parent()
+            .next()
+            .find('input')
+            .first()
+            .focus();
+        }
+        // onKeyPress: function(val, e, field, options) {
+        //   if ($(field).attr('id') == 'celular1')
+        //     self.fv[1].revalidateField($(field).attr('id'));
+        //   field.mask(
+        //     $.jMaskGlobals.SPMaskBehavior.apply({}, arguments),
+        //     options
+        //   );
+        // },
+        // onComplete: function(val, e, field) {
+        //   $(field)
+        //     .parent()
+        //     .parent()
+        //     .next()
+        //     .find('input')
+        //     .first()
+        //     .focus();
+        // }
+      }
+    );
+
+    // $('#phone, #mobile').mask($.jMaskGlobals.SPMaskBehavior, {
+    //   onKeyPress: function(val, e, field, options) {
+    //     self.fv[0].revalidateField($(field).attr('id'));
+    //     field.mask($.jMaskGlobals.SPMaskBehavior.apply({}, arguments), options);
+    //   },
+    //   onComplete: function(val, e, field) {
+    //     $(field)
+    //       .parent()
+    //       .parent()
+    //       .next()
+    //       .find('input')
+    //       .first()
+    //       .focus();
+    //   }
+    // });
+
+    $('#zipCode').mask('00000-000');
 
     let form = document.getElementById(self.dfId);
+
     let fv1 = FormValidation.formValidation(
       form.querySelector('.step-pane[data-step="1"]'),
       {
         fields: {
-          'cpf_cnpj': {
+          cod_cliente: {
             validators: {
               notEmpty: {
-                message: 'O cpf/cnpj é obrigatório',
+                message: 'código obrigatório'
+              }
+            }
+          },
+          cpf_cnpj: {
+            validators: {
+              notEmpty: {
+                message: 'O cpf/cnpj é obrigatório'
               },
               vat: {
                 enabled: false,
                 country: 'BR',
-                message: 'cnpj inválido',
+                message: 'cnpj inválido'
               },
               id: {
                 country: 'BR',
-                message: 'cpf inválido',
+                message: 'cpf inválido'
               }
             }
           },
-          'nome_fantasia': {
+          nome: {
             validators: {
               notEmpty: {
-                message: 'O nome completo/fantaria é obrigatório!'
+                message: 'O nome completo é obrigatório!'
               },
               stringLength: {
                 min: 5,
@@ -128,7 +226,7 @@ new IOService({
               }
             }
           },
-          'dt_nascimento': {
+          dt_nascimento: {
             validators: {
               date: {
                 format: 'DD/MM/YYYY',
@@ -136,300 +234,424 @@ new IOService({
               }
             }
           },
-        },
-        plugins: {
-          trigger: new FormValidation.plugins.Trigger(),
-          submitButton: new FormValidation.plugins.SubmitButton(),
-          // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-          bootstrap: new FormValidation.plugins.Bootstrap(),
-          icon: new FormValidation.plugins.Icon({
-            valid: 'fv-ico ico-check',
-            invalid: 'fv-ico ico-close',
-            validating: 'fv-ico ico-gear ico-spin'
-          }),
-        },
-      }).setLocale('pt_BR', FormValidation.locales.pt_BR)
-      .on('core.validator.validated', function (event) {
-        // console.log(event);
-      });
-
-    let fv2 = FormValidation.formValidation(
-      form.querySelector('.step-pane[data-step="2"]'),
-      {
-        fields: {
-          'celular1': {
-            validators: {
-              stringLength: {
-                  min: 14,
-                  message: 'Celular inválido'
-              },
-              phone: {
-                country: 'BR',
-                message: 'Celular inválido'
-              },
-              notEmpty: {
-                message: 'O telefone Celular é obrigatório',
-              }
-            },
-          },
-          'celular2': {
-            validators: {
-              phone: {
-                country: 'BR',
-                message: 'Celular inválido'
-              }
-            },
-          },
-          'telefone1': {
-            validators: {
-              phone: {
-                country: 'BR',
-                message: 'Telefone inválido'
-              }
-            },
-          },
-          'telefone2': {
-            validators: {
-              phone: {
-                country: 'BR',
-                message: 'Telefone inválido'
-              }
-            },
-          },
-          'email': {
-            validators: {
-              notEmpty: {
-                message: 'O e-mail principal é obrigatório',
-              },
-              emailAddress: {
-                message: 'E-mail Inválido',
-              }
-            }
-          },
-          'cep': {
+          zipCode: {
             validators: {
               promise: {
                 notEmpty: {
-                  message: 'O CEP é obrigatório!'
+                  message: 'The avatar is required'
                 },
                 enabled: true,
                 promise: function (input) {
-                  return new Promise(function (resolve, reject) {
-                    if (input.value.replace(/\D/g, '').length < 8)
-                      resolve({
-                        valid: false,
-                        message: 'Cep Inválido!',
-                        meta: {
-                          data: null
-                        }
-                      })
-                    else {
-                      $.ajax({
-                        url: `https://viacep.com.br/ws/${$('#cep').cleanVal()}/json`,
-                        success: (data) => {
-                          //console.log(data)
-                          if (data.erro == true) {
-                            resolve({
-                              valid: false,
-                              message: 'Cep não encontrado!',
-                              meta: {
-                                data: null
-                              }
-                            });
-                          }
-                          else
-                            resolve({
-                              valid: true,
-                              meta: {
-                                data
-                              }
-                            });
-                        }
-                      });
-                    }
-                  });
+                  return getCep(input.value);
                 }
               }
             }
           },
-          'logradouro': {
+          address: {
             validators: {
               notEmpty: {
-                message: 'O endereço é obrigatório!'
-              },
+                message: 'O endereço é obrigatório'
+              }
             }
           },
-          'numero': {
+          address2: {
             validators: {
               notEmpty: {
-                message: 'O número é obrigatório!'
-              },
+                message: 'O bairro é obrigatório'
+              }
             }
           },
-          'bairro': {
+          celular1: {
             validators: {
-              notEmpty: {
-                message: 'O endereço é obrigatório!'
+              // stringLength: {
+              //   min: 14,
+              //   message: 'Celular inválido'
+              // },
+              phone: {
+                country: 'BR',
+                message: 'Celular inválido'
               },
+              notEmpty: {
+                message: 'O telefone Celular é obrigatório'
+              }
             }
           },
-          'cidade': {
+          celular2: {
             validators: {
-              notEmpty: {
-                message: 'A cidade é obrigatória!'
-              },
+              phone: {
+                country: 'BR',
+                message: 'Celular inválido'
+              }
+            }
+          },
+          telefone1: {
+            validators: {
+              phone: {
+                country: 'BR',
+                message: 'Telefone inválido'
+              }
+            }
+          },
+          telefone2: {
+            validators: {
+              phone: {
+                country: 'BR',
+                message: 'Telefone inválido'
+              }
+            }
+          },
+          email: {
+            validators: {
+              // notEmpty: {
+              //   message: 'O e-mail principal é obrigatório'
+              // },
+              emailAddress: {
+                message: 'E-mail Inválido'
+              }
             }
           }
+          // has_images: {
+          //   validators: {
+          //     callback: {
+          //       message: 'Insira a logo da empresa!',
+          //       callback: function(input) {
+          //         if (self.dz.files.length == 0) {
+          //           toastr['error']('Insira a logo da empresa!');
+          //           return false;
+          //         }
+          //         $('#has_images').val(true);
+          //         return true;
+          //       }
+          //     }
+          //   }
+          // }
         },
         plugins: {
           trigger: new FormValidation.plugins.Trigger(),
           submitButton: new FormValidation.plugins.SubmitButton(),
-          // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
           bootstrap: new FormValidation.plugins.Bootstrap(),
           icon: new FormValidation.plugins.Icon({
             valid: 'fv-ico ico-check',
             invalid: 'fv-ico ico-close',
             validating: 'fv-ico ico-gear ico-spin'
-          }),
-        },
-      }).on('core.validator.validated', function (e) {
-        if (e.field === 'cep' && e.validator === 'promise') {
-          setCEP(e.result.meta.data, self);
+          })
+        }
+      }
+    )
+      .setLocale('pt_BR', FormValidation.locales.pt_BR)
+      .on('core.validator.validated', function (e) {
+        if (e.field === 'zipCode' && e.validator === 'promise') {
+          if (e.result.meta.data !== null) setCEP(e.result.meta.data, self);
+          else {
+          }
         }
       });
 
-    self.fv = [fv1, fv2];
+    self.fv = [fv1];
+
+    //Dropzone initialization
+    Dropzone.autoDiscover = false;
+    self.dz = new DropZoneLoader({
+      id: '#custom-dropzone',
+      autoProcessQueue: false,
+      thumbnailWidth: 300,
+      thumbnailHeight: 300,
+      class: 'm-auto',
+      maxFiles: 1,
+      mainImage: false,
+      copy_params: {
+        original: true,
+        sizes: {}
+      },
+      crop: {
+        ready: cr => {
+          cr.aspect_ratio_x = 1;
+          cr.aspect_ratio_y = 1;
+        }
+      },
+      buttons: {
+        reorder: false
+      },
+      onSuccess: function (file, ret) {
+        //self.fv[0].revalidateField('has_images');
+      },
+      onPreviewLoad: function (_t) {
+        if (self.toView !== null) {
+          let _conf = self.config.default;
+          self.dz.removeAllFiles(true);
+          // self.dz.reloadImages(self.config.default);
+          self.fv[0].validate();
+          //aa
+        }
+      }
+    });
 
     //need to transform wizardActions in a method of Class
     self.wizardActions(function () {
-      //if ($('name=["tipo"]').chekced)
-      //alert(1);
+      //self.dz.copy_params.sizes.default = {"w":$('#width').val(),"h":$('#height').val()}
+      document
+        .getElementById(self.dfId)
+        .querySelector("[name='__dz_images']").value = JSON.stringify(
+          self.dz.getOrderedDataImages()
+        );
+      document
+        .getElementById(self.dfId)
+        .querySelector("[name='__dz_copy_params']").value = JSON.stringify(
+          self.dz.copy_params
+        );
+      // return false;
     });
 
+
     self.callbacks.view = view(self);
-    self.callbacks.update.onSuccess = () => {
-      swal({
-        title: "Sucesso",
-        text: "Entidade atualizada com sucesso!",
-        type: "success",
-        confirmButtonText: 'OK',
-        onClose: function () {
-          self.unload(self);
-          location.reload();
+    // self.callbacks.update.onSuccess = () => {
+    //   self.tabs['listar'].tab.tab('show');
+    // }
+
+    self.callbacks.delete.onSuccess = data => {
+      console.log('no success do delete')
+      self.callbacks.unload(self)
+    }
+
+    self.override.create.onSuccess = (data) => {
+      if (data.success) {
+        // try {
+        //   self.tabs['listar'].setState(true);
+        // } catch (err) { }
+        self.callbacks.create.onSuccess(data);
+        HoldOn.close();
+        swal({
+          title: 'Cadastro efetuado com sucesso!',
+          confirmButtonText: 'OK',
+          type: 'success',
+          onClose: function () {
+            self.unload(self);
+            self.view(data.data.id);
+            // setTimeout(() => {
+            //   self.tabs['historico'].tab.tab('show');
+            // }, 100)
+          }
+        });
+      }
+    };
+
+    // self.callbacks.update.onSuccess = () => {
+    //   swal({
+    //     title: 'Sucesso',
+    //     text: 'Registro atualizado com sucesso!',
+    //     type: 'success',
+    //     confirmButtonText: 'OK',
+    //     onClose: function () {
+    //       self.unload(self);
+    //       location.reload();
+    //     }
+    //   });
+    // };
+
+    self.callbacks.unload = self => {
+
+      self.tabs['historico'].tab.addClass('disabled')
+
+      $('#cpf_cnpj, #cod_cliente')
+        .removeAttr('readonly')
+
+      $(
+        '#cod_cliente,#cpf_cnpj, #nome, #email, #address, #address2, #city,#city_id, #state'
+      ).val('');
+
+      self.dz.removeAllFiles(true);
+    };
+
+    self.onNew = self => {
+      self.unload(self);
+      document.location.reload()      // self.unload()
+      // self.callbacks.unload(self)
+    }
+  }
+); //the end ??
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                                            
+  ██╗      ██████╗  ██████╗ █████╗ ██╗         ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
+  ██║     ██╔═══██╗██╔════╝██╔══██╗██║         ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
+  ██║     ██║   ██║██║     ███████║██║         ██╔████╔██║█████╗     ██║   ███████║██║   ██║██║  ██║███████╗
+  ██║     ██║   ██║██║     ██╔══██║██║         ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║╚════██║
+  ███████╗╚██████╔╝╚██████╗██║  ██║███████╗    ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
+  ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝    ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+function getCep(value) {
+  return new Promise(function (resolve, reject) {
+    if (value.replace(/\D/g, '').length < 8)
+      resolve({
+        valid: false,
+        message: 'Cep Inválido!',
+        meta: {
+          data: null
+        }
+      });
+    else {
+      delete $.ajaxSettings.headers['X-CSRF-Token'];
+
+      $.ajax({
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        complete: jqXHR => {
+          $.ajaxSettings.headers['X-CSRF-Token'] = laravel_token;
+        },
+        url: `https://viacep.com.br/ws/${$('#zipCode').cleanVal()}/json`,
+        success: data => {
+          if (data.erro == true) {
+            resolve({
+              valid: false,
+              message: 'Cep não encontrado!',
+              meta: {
+                data: null
+              }
+            });
+          } else {
+            resolve({
+              valid: true,
+              meta: {
+                data
+              }
+            });
+          }
         }
       });
     }
-
-    self.callbacks.create.onSuccess = function () {
-      self.tabs['listar'].tab.tab('show');
-    }
-
-    self.callbacks.unload = function (self) {
-
-    }
-
-    var citys = [];
-    $CB.forEach(element => {
-      citys.push({ value: element.c + ' / ' + element.u, data: element.i });
-    });
-    $('#cidade').autocomplete({
-      lookup: citys,
-      onSelect: function (_t) {
-        //alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
-        $('#cidade_id').val(_t.data);
-      }
-    });
-
-    function setCEP(data, self) {
-      const _conf = self.toView;
-
-      if (self.toView !== null && $('#cep').val() == _conf.cep) {
-
-        if ($('#logradouro').val() == "" && _conf.logradouro !== "") {
-          $('#logradouro').val(_conf.logradouro);
-        }
-
-        if ($('#bairro').val() == "" && _conf.bairro !== "")
-          $('#bairro').val(_conf.bairro);
-
-        $('#cidade').val(data.localidade + " / " + data.uf);
-        $('#cidade_id').val(data.ibge);
-        $('#logradouro').focus();
-      }
-      else {
-        if (data !== null) {
-          //com logradouro   
-          if (data.logradouro !== '') {
-            $('#logradouro').val(`${data.logradouro}${data.complemento != '' ? ', ' + data.complemento : ''}`);
-            $('#bairro').val(data.bairro);
-          }
-
-          $('#cidade').val(data.localidade + " / " + data.uf);
-          $('#cidade_id').val(data.ibge);
-          $('#logradouro').focus();
-        }
-        else
-          $('#logradouro, #bairro, #cidade').val('');
-      }
-
-      self.fv[1].revalidateField('logradouro');
-      self.fv[1].revalidateField('bairro');
-    }
-
-    //CRUD CallBacks
-    function view(self) {
-      return {
-        onSuccess: function (data) {
-          $("#cpf_cnpj").val(data.cpf_cnpj);
-          if ($('#cpf_cnpj').cleanVal().length == 11) {
-            self.fv[0].disableValidator('cpf_cnpj', 'vat')
-              .enableValidator('cpf_cnpj', 'id')
-              .revalidateField('cpf_cnpj');
-          }
-          else {
-            self.fv[0].disableValidator('cpf_cnpj', 'id')
-              .enableValidator('cpf_cnpj', 'vat')
-              .revalidateField('cpf_cnpj');
-          }
-
-          data.tipo = data.tipo.split(',');
-          for (var i = 0; i < data.tipo.length; i++) {
-            $('#tipo' + data.tipo[i]).prop('checked', true);
-          }
-
-          if (data.dt_nascimento != null) {
-            $('#dt_nascimento_submit').val(data.dt_nascimento);
-            data.dt_nascimento = data.dt_nascimento.substr(8, 2) + '/' + data.dt_nascimento.substr(5, 2) + '/' + data.dt_nascimento.substr(0, 4);
-            $('#dt_nascimento').val(data.dt_nascimento).trigger('input');
-          }
-          $('#cpf_cnpj').trigger('input');
-          $("#__form_edit").val(data.id);
-          $("#nome_fantasia").val(data.nome_fantasia);
-          $("#telefone1").val(data.telefone1);
-          $("#telefone2").val(data.telefone2);
-          $("#celular1").val(data.celular1);
-          $("#celular2").val(data.celular2);
-          $("#cep").val(data.cep).trigger('input');
-          $("#logradouro").val(data.logradouro);
-          $("#bairro").val(data.bairro);
-          $('#numero').val(data.numero);
-          $('#complemento').val(data.complemento);
-          $("#cidade").val(data.cidade + ' / ' + data.uf);
-          $("#cidade_id").val(data.cidade_id);
-          $('#email').val(data.email);
-          $('#razaosocial').val(data.razaosocial);
-          $('#insc_estadual').val(data.insc_estadual);
-          $('#responsavel').val(data.responsavel);
-          $('#rg').val(data.rg);
-          $('#sexo' + data.sexo).prop('checked', true);
-          $('#estado_civil').val(data.estado_civil);
-          $('#nacionalidade').val(data.nacionalidade);
-          $('#profissao').val(data.profissao);
-          $('#observacao').val(data.observacao);
-        },
-        onError: function (self) {
-          console.log(self);
-        }
-      }
-    }
   });
+}
+
+function view(self) {
+  return {
+    onSuccess: function (data) {
+      const d = data;
+
+      // $('#__form_edit').val(d.id);
+
+      // //reload imagens
+      self.dz.removeAllFiles(true);
+
+      if (d.group != null) self.dz.reloadImages(d);
+
+      $('#cod_cliente').val(d.cod_cliente);
+      $('#otica_id').val(d.otica_id);
+
+      $('#cpf_cnpj')
+        .val(d.cpf_cnpj)
+        .attr('readonly', true)
+        .trigger('input');
+
+      $('#cod_cliente')
+        .val(d.cod_cliente)
+        .attr('readonly', true)
+        .trigger('input');
+
+
+      if ($('#cpf_cnpj').cleanVal().length == 11) {
+        self.fv[0]
+          .disableValidator('cpf_cnpj', 'vat')
+          .enableValidator('cpf_cnpj', 'id')
+          .revalidateField('cpf_cnpj');
+      } else {
+        self.fv[0]
+          .disableValidator('cpf_cnpj', 'id')
+          // .enableValidator('cpf_cnpj', 'vat')
+          .revalidateField('cpf_cnpj');
+      }
+
+      $('#nome').val(d.nome);
+      $('#status').val(d.status);
+      $('#rg').val(d.rg);
+      $('#sexo').val(d.sexo);
+      $('#estado_civil').val(d.estado_civil);
+      $('#local_trabalho').val(d.local_trabalho);
+
+      if (d.dt_nascimento !== null) {
+        var dtn = d.dt_nascimento.split('-');
+        $('#dt_nascimento')
+          .pickadate('picker')
+          .set('select', [dtn[0], dtn[1] - 1, dtn[2]]);
+      }
+
+
+      $('#refs_pessoais').val(d.refs_pessoais);
+      $('#refs_comerciais').val(d.refs_comerciais);
+
+      $('#telefone1')
+        .val(d.telefone1)
+        .trigger('input');
+
+      $('#telefone2')
+        .val(d.telefone2)
+        .trigger('input');
+
+      $('#celular1')
+        .val(d.celular1)
+        .trigger('input');
+
+      $('#celular2')
+        .val(d.celular2)
+        .trigger('input');
+
+      $('#email')
+        .val(d.email)
+        .trigger('input');
+
+
+      $('#zipCode')
+        .val(d.zipCode)
+        .trigger('input');
+
+      getCep(d.zipCode).then(el => {
+        setCEP(el.meta.data, self);
+
+        $('#address').val(d.address);
+        $('#address2').val(d.address2);
+
+      });
+
+
+      self.tabs['historico'].tab.removeClass('disabled')
+    },
+    onError: function (self) {
+
+      console.log('executa algo no erro do callback', this);
+    }
+  };
+}
+
+function setCEP(data, self) {
+  const _conf = self.toView;
+
+  if (self.toView !== null && $('#zipCode').val() == _conf.zipCode) {
+    if ($('#address').val() == '' && _conf.address !== '') {
+      $('#address').val(_conf.address);
+    }
+
+    if ($('#address2').val() == '' && _conf.address2 !== '')
+      $('#address2').val(_conf.address2);
+
+    $('#city_id').val(data.ibge);
+    $('#city').val(data.localidade);
+    $('#state').val(data.uf);
+    $('#address').focus();
+  } else {
+    if (data !== null) {
+      //com logradouro
+      if (data.logradouro) {
+        $('#address').val(`${data.logradouro}`);
+        $('#address2').val(data.bairro);
+      }
+
+      $('#city').val(data.localidade);
+      $('#city_id').val(data.ibge);
+      $('#state').val(data.uf);
+      $('#address').focus();
+    } else $('#address, #address2, #city, #state').val('');
+  }
+
+  self.fv[0].revalidateField('address');
+  self.fv[0].revalidateField('address2');
+}

@@ -4,6 +4,7 @@ namespace Dataview\IOEntity;
 use DataTables;
 use Dataview\IntranetOne\IOController;
 use Dataview\IOEntity\Entity;
+use Dataview\IntranetOne\Group;
 use Dataview\IOEntity\EntityRequest;
 use Illuminate\Http\Response;
 
@@ -19,9 +20,23 @@ class EntityController extends IOController
   }
 
   function list() {
-    $query = Entity::select('*')->orderBy('created_at', 'desc')->get();
+    $query = Entity::select('id','cpf_cnpj','status','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id')
+      ->orderBy('created_at', 'desc')->get();
     return Datatables::of(collect($query))->make(true);
   }
+
+  function historyList($id) {
+    $ent = Entity::where('id',$id)->first();
+    
+    $query = filled($ent) ? $ent
+      ->groups()
+      ->select('entity_group.id','otica_id','date','value','payment','product','details','alias')
+      ->leftJoin('oticas','oticas.id','entity_group.otica_id')
+      ->get() : [];
+
+    return Datatables::of(collect($query))->make(true);
+  }
+
 
   public function create(EntityRequest $request){
     $check = $this->__create($request);
@@ -31,10 +46,49 @@ class EntityController extends IOController
     }
     
     $obj = new Entity($request->all());
+
+    if($request->sizes!= null){
+      $obj->setAppend("sizes",$request->sizes);
+      $obj->setAppend("has_images",$request->has_images);
+      $obj->save();
+    }
+
     $obj->save();
+
+    return response()->json(['success' => true, 'data' => ["id"=>$obj->id]]);
+  }
+
+
+  public function historyCreate(EntityHistoryRequest $request){
+    $check = $this->__create($request);
+    
+    if (!$check['status']) {
+        return response()->json(['errors' => $check['errors']], $check['code']);
+    } 
+    
+    $r = (object) $request->all();
+
+    $ent =Entity::where('id',$r->entityId)->first();
+
+    if(filled($ent)){
+      $ent->groups()->save(new Group([
+          'group' => "Histórico teste",
+          'sizes' => ''
+        ]),[
+            "otica_id"=>$r->hist_otica_id,
+            "date"=>$r->dt_compra_submit,
+            "value"=>$r->value,
+            "payment"=>$r->payment,
+            "product"=>$r->product,
+            "details"=>$r->details
+          ]);
+    }
+
+    // $obj->save();
 
     return response()->json(['success' => true, 'data' => null]);
   }
+
 
   public function view($id)
   {
@@ -43,9 +97,15 @@ class EntityController extends IOController
         return response()->json(['errors' => $check['errors']], $check['code']);
     }
 
-    $query = Entity::select('entidades.*', 'cidades.cidade', 'cidades.uf')
-        ->join('cidades', 'entidades.cidade_id', '=', 'cidades.id')
-        ->where('entidades.id', $id)->get();
+    $query = Entity::select('entities.*', 'cities.city', 'cities.region')
+      ->with([
+          'group'=>function($query){
+          $query->select('groups.id','sizes')
+          ->with('files');
+        },
+      ])
+        ->join('cities', 'entities.city_id', '=', 'cities.id')
+        ->where('entities.id', $id)->get();
 
     return response()->json(['success' => true, 'data' => $query]);
   }
@@ -59,29 +119,26 @@ class EntityController extends IOController
     $_new = (object) $request->all();
 
     $_old = Entity::find($id);
-    $_old->tipo = $_new->tipo;
-    $_old->razaosocial = $_new->razaosocial;
-    $_old->nome_fantasia = $_new->nome_fantasia;
-    $_old->insc_estadual = $_new->insc_estadual;
-    $_old->responsavel = $_new->responsavel;
-    $_old->rg = $_new->rg;
-    $_old->sexo = $_new->sexo;
-    $_old->estado_civil = $_new->estado_civil;
-    $_old->nacionalidade = $_new->nacionalidade;
-    $_old->profissao = $_new->profissao;
-    $_old->dt_nascimento = $_new->dt_nascimento;
-    $_old->telefone1 = $_new->telefone1;
-    $_old->telefone2 = $_new->telefone2;
-    $_old->celular1 = $_new->celular1;
-    $_old->celular2 = $_new->celular2;
-    $_old->email = $_new->email;
-    $_old->cep = $_new->cep;
-    $_old->logradouro = $_new->logradouro;
-    $_old->numero = $_new->numero;
-    $_old->complemento = $_new->complemento;
-    $_old->bairro = $_new->bairro;
-    $_old->cidade_id = $_new->cidade_id;
-    $_old->observacao = $_new->observacao;
+
+    $upd = ['status','otica_id','nome','rg','sexo','local_trabalho','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','refs_comerciais','refs_pessoais'];
+
+    foreach($upd as $u)
+      $_old->{$u} = optional($_new)->{$u};
+      
+    if($_old->group != null){
+      $_old->group->sizes = $_new->sizes;
+      $_old->group->manageImages(json_decode($_new->__dz_images),json_decode($_new->sizes));
+      $_old->group->save();
+    }
+    else
+      if(count(json_decode($_new->__dz_images))>0){
+        $_old->group()->associate(Group::create([
+          'group' => "Album da Entidade".$id,
+          'sizes' => $_new->sizes
+          ])
+        );
+        $_old->group->manageImages(json_decode($_new->__dz_images),json_decode($_new->sizes));
+      }    
 
     $_old->save();
     return response()->json(['success' => $_old->save()]);
@@ -116,12 +173,5 @@ class EntityController extends IOController
 
   public function getEntidades($query){
     return json_encode(Entity::select('razaosocial as n', 'cpf_cnpj as k')->where('razaosocial', 'like', "%$query")->get());
-  }
-
-  public function get_enum_values( $table, $field ){
-    $type = Entity::query( "SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'" )->row( 0 )->Type;
-    preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
-    $enum = explode("','", $matches[1]);
-    return $enum;
   }
 }

@@ -8,14 +8,14 @@
     
   </div>
 	@component('IntranetOne::io.components.datatable',[
-	"_id" => "default-table",
+	"_id" => "hist-table",
 	"_columns"=> [
 			["title" => "#"],
-			["title" => "Nome"],
-			["title" => "CPF/CNPJ"],
-			["title" => "Telefone"],
-			["title" => "Celular"],
-			["title" => "S"],
+			["title" => "Loja"],
+			["title" => "Produto"],
+			["title" => "Data"],
+			["title" => "Valor"],
+			["title" => "Entrada"],
 			["title" => "Ações"]
 		]
 	])

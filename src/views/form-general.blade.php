@@ -1,111 +1,137 @@
+@php
+  use Dataview\IntranetOne\IntranetOne;
+  use Dataview\IOEntity\Models\Otica;
+  $ecivil = IntranetOne::getEnumValues('entities','estado_civil');
+  $oticas = Otica::select('id','alias','main','name')->orderBy('main')->orderBy('alias')->get();
+  $situacao = IntranetOne::getEnumValues('entities','status');
+@endphp
+
 <div class = 'row'>
-  <div class="col-md-3 col-sm-12">
-    <div class="form-group">
-      <label for='cpf_cnpj'>CPF / CNPJ</label>
-      <input type="text" id='cpf_cnpj' name='cpf_cnpj' class = 'form-control input-lg' />
-    </div>
+  <div class="col-xs-12 col-sm-2">
+    @include("IntranetOne::io.forms.form-images",[
+      "id" => "custom-dropzone",
+      "class"=>'entity-dz flex-nowrap'
+    ])
   </div>
-  <div class="col-md-5 col-sm-12">
-    <div class="form-group">
-      <label for='nome_fantasia'>Nome Completo / Nome Fantasia</label>
-      <input type="text" id='nome_fantasia' name='nome_fantasia' class = 'form-control input-lg' />
-    </div>
-  </div>
-  <div class="col-md-4 col-sm-12">
-    <label for='sexo'>Tipo de cadastro</label><br>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="checkbox" class="custom-control-input" onclick="return false;" checked id="tipoCLI" name="tipo[]" value="CLI">
-      <label class="custom-control-label" for="tipoCLI">Cliente</label>
-    </div>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="checkbox" class="custom-control-input" id="tipoFOR" name="tipo[]" value="FOR">
-      <label class="custom-control-label" for="tipoFOR">Fornecedor</label>
-    </div>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="checkbox" class="custom-control-input" id="tipoFUN" name="tipo[]" value="FUN">
-      <label class="custom-control-label" for="tipoFUN">Funcionário</label>
-    </div>
-  </div>
-</div>
-<div class = 'row pf_container'>
-  <div class="col-md-3 col-sm-12" style="margin-bottom:-20px">
-    <div class="form-group">
-      <label for='dt_nascimento'>Data de nascimento</label>
-      <input type="text" id='dt_nascimento' name='dt_nascimento' class = 'form-control input-lg' />
-    </div>
-  </div>
-  <div class="col-md-5 col-sm-12">
-    <div class="form-group">
-      <label for='rg'>Número do RG / Órgão Emissor - UF</label>
-      <input type="text" id='rg' name='rg' class = 'form-control input-lg'/>
-    </div>
-  </div>
-  <div class="col-md-4 col-sm-12">
-    <label for='sexo'>Sexo</label><br>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="radio" class="custom-control-input" id="sexoF" name="sexo" value="F">
-      <label class="custom-control-label" for="sexoF">Feminino</label>
-    </div>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="radio" class="custom-control-input" id="sexoM" name="sexo" value="M">
-      <label class="custom-control-label" for="sexoM">Masculino</label>
-    </div>
-    <div class="custom-control custom-radio custom-control-inline">
-      <input type="radio" class="custom-control-input" checked id="sexoI" name="sexo" value="O">
-      <label class="custom-control-label" for="sexoI">Não Informado</label>
-    </div>
-  </div>
-  <div class="col-md-3 col-sm-12">
-    <div class="form-group selectContainer">
-      <label for='estado_civil'>Estado Civil</label>
-      <select name="estado_civil" id="estado_civil" class="form-control input-lg">
-        <option value=""></option>
-        <option value="Casado">Casado</option>
-        <option value="Divorciado">Divorciado</option>
-        <option value="Separado">Separado</option>
-        <option value="Solteiro">Solteiro</option>
-        <option value="Viúvo">Viúvo</option>
-      </select>
-    </div>
-  </div>
-  <div class="col-md-5 col-sm-12">
-    <div class="form-group">
-      <label for='profissao'>Profissão</label>
-      <input type="text" id='profissao' name='profissao' class = 'form-control input-lg'/>
-    </div>
-  </div>
-  <div class="col-md-4 col-sm-12">
-    <div class="form-group">
-      <label for='nacionalidade'>Nacionalidade</label>
-      <input type="text" id='nacionalidade' name='nacionalidade' value='Brasileira' class = 'form-control input-lg'/>
-    </div>
-  </div>
-</div>
-<div  class = 'row pj_container d-none'>
-  <div class="col-md-3 col-sm-12">
-    <div class="form-group">
-      <label for='insc_estadual'>Inscrição Estadual</label>
-      <input type="text" id='insc_estadual' name='insc_estadual' class = 'form-control input-lg'/>
-    </div>
-  </div>
-  <div class="col-md-5 col-sm-12">
-    <div class="form-group">
-      <label for='razaosocial'>Razão Social</label>
-      <input type="text" id='razaosocial' name='razaosocial' class = 'form-control input-lg'/>
-    </div>
-  </div>
-  <div class="col-md-4 col-sm-12">
-      <div class="form-group">
-        <label for='responsavel'>Responsável</label>
-        <input type="text" id='responsavel' name='responsavel' class = 'form-control input-lg'/>
+  <div class="col-xs-12 col-sm-10 px-0 pl-3">
+    <div class = 'row'>
+      <div class="col-sm-4 col-xs-12">
+        <div class = 'row my-0'>
+          <div class="col-sm-5 col-xs-12">
+            <div class="form-group">
+              <label for='cod_cliente'>Cod Cliente</label>
+              <input type="text" id='cod_cliente' name='cod_cliente' class = 'form-control input-lg' />
+            </div>
+          </div>
+          <div class="col-sm-7 col-xs-12">
+            <div class="form-group selectContainer">
+              <label for='otica_id'>Loja Origem</label>
+              <select name="otica_id" id="otica_id" class="form-control input-lg mt-1">
+                @foreach($oticas as $o)
+                  <option value="{{$o->id}}">{{$o->name}}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8 col-xs-12">
+        <div class = 'row'>
+          <div class="col-sm-3 col-xs-12">
+            <div class="form-group">
+              <label for='cpf_cnpj'>CPF / CNPJ</label>
+              <input type="text" id='cpf_cnpj' name='cpf_cnpj' class = 'form-control input-lg' />
+            </div>
+          </div>
+          <div class="col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for='nome_fantasia'>Nome Completo / Nome Fantasia</label>
+              <input type="text" id='nome' name='nome' class = 'form-control input-lg' />
+            </div>
+          </div>
+          <div class="col-sm-3 col-xs-12">
+            <div class="form-group">
+              <label for='status'>Situação</label>
+              <select name="status" id="status" class="form-control input-lg mt-1">
+                  @foreach($situacao as $r)
+                    <option value="{{$r}}">{{$r}}</option>
+                  @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-</div>
-<div class="row">
-  <div class="col-md-12 col-sm-12">
-    <div class="form-group">
-      <label for='observacao'>Observação</label>
-      <textarea id='observacao' name='observacao' rows="4" class = 'form-control'></textarea>
+    <div class = 'row px-0'>
+      <div class="col-sm-3 col-xs-12">
+        <div class="form-group">
+          <label for='rg'>Número do RG / Órgão Emissor - UF</label>
+          <input type="text" id='rg' name='rg' class = 'form-control input-lg'/>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-2">
+        <div class="form-group selectContainer">
+          <label for='sexo'>Sexo</label>
+          <select name="sexo" id="sexo" class="form-control input-lg mt-1">
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
+            <option value="I">Não Informado</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-2">
+        <div class="form-group selectContainer">
+          <label for='estado_civil'>Estado Civil</label>
+          <select name="estado_civil" id="estado_civil" class="form-control input-lg mt-1">
+            <option value="">Não Informado</option>
+              @foreach($ecivil as $r)
+                <option value="{{$r}}">{{$r}}</option>
+              @endforeach
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-12">
+        <div class="form-group">
+          <label for='local_trabalho'>Local de Trabalho</label>
+          <input type="text" id='local_trabalho' name='local_trabalho' class = 'form-control input-lg'/>
+        </div>
+      </div>
+      <div class="col-sm-2 col-xs-12">
+        <div class="form-group">
+          <label for='dt_nascimento'>Dt Nascimento</label>
+          <input type="text" id='dt_nascimento' name='dt_nascimento' class = 'form-control input-lg' />
+        </div>
+      </div>
+    </div>
+
+    <div class = 'row px-0 mx-0'>
+      <div class="col-xs-12 w-100">
+          @component('IntranetOne::io.components.nav-tabs',
+          [
+            "_id" => "aditional-data",
+            "_active"=>0,
+            '_controls'=>false,
+            "_tabs"=> [
+              [
+                "tab"=>"Telefones e Endereço",
+                "icon"=>"ico ico-business-card",
+                "view"=>"Entity::form-parts.address",
+                "params"=>[
+                ],
+              ],
+              [
+                "tab"=>"Referências Pessoais e Comerciais",
+                "icon"=>"ico ico-talking",
+                "view"=>"Entity::form-parts.refs",
+                "params"=>[
+                ],
+              ]
+            ]
+          ])
+          @endcomponent
+      </div>
     </div>
   </div>
+
 </div>
+

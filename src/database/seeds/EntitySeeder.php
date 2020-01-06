@@ -2,8 +2,11 @@
 namespace Dataview\IOEntity;
 
 use Dataview\IntranetOne\Service;
+use Dataview\IOEntity\Models\City;
+use Dataview\IOEntity\Models\Otica;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
+use Dataview\IOEntity\IOEntityServiceProvider;
 use Sentinel;
 
 class EntitySeeder extends Seeder
@@ -15,8 +18,9 @@ class EntitySeeder extends Seeder
         Service::insert([
             'service' => "Entity",
             'alias' => 'entity',
+            'trans' => 'Clientes',
             'ico' => 'ico-book-users',
-            'description' => 'Entidades do Sistema (Cliente, Funcionário e Fornecedor)',
+            'description' => 'Relação de Clientes',
             'order' => Service::max('order') + 1,
         ]);
     }
@@ -27,20 +31,39 @@ class EntitySeeder extends Seeder
       $adminRole->addPermission('entity.update');
       $adminRole->addPermission('entity.delete');
       $adminRole->save();
-      /*
-      Cidade::query()->truncate();
-      $json = File::get("public/io/services/cidades.json");
-      $data = json_decode($json, true);
-      $i = 0;
-      foreach ($data as $obj) {
-          Cidade::create(
-              array(
-                  'id' => $obj['id'],
-                  'cidade' => $obj['cidade'],
-                  'uf' => $obj['uf'],
-              )
-          );
+      
+
+      \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+      \DB::table('cities')->truncate();
+      \DB::table('oticas')->truncate();
+      \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+      $oticas = [
+        ["name"=>"Ótica Baroni", "alias"=> "Baroni", "main" => false],
+        ["name"=>"Ótica Ceres", "alias"=> "Ceres", "main" => false],
+        ["name"=>"Ótica Globo", "alias"=>"Globo", "main" => false],
+        ["name"=>"Ótica Gurupi", "alias"=>"Gurupi", "main" => false],
+        ["name"=>"Rio Ótica", "alias"=>"Rio Ótica","main" => true],
+        ["name"=>"Ótica Vênus", "alias"=>"Vênus", "main" => false],
+        ["name"=>"Ótica Visão", "alias"=>"Visão", "main" => false],
+      ];
+
+      foreach($oticas as $o){
+         Otica::create([
+            'name' => $o["name"],
+            'alias' => $o["alias"],
+            'main' => $o["main"],
+          ]);
       }
-      */
+
+      $json = File::get(IOEntityServiceProvider::pkgAddr('/assets/src/cities.json'));
+      $data = json_decode($json, true);
+      foreach ($data as $obj) {
+          City::create([
+            'id' => $obj['i'],
+            'city' => $obj['c'],
+            'region' => $obj['u'],
+          ]);
+      }
   }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 
 class CreateCityTable extends Migration
 {
@@ -12,13 +13,12 @@ class CreateCityTable extends Migration
      */
     public function up()
     {
-        Schema::create('cidades', function (Blueprint $table) {
-			$table->integer('id')->unsigned()->primary();
-			$table->string('cidade');
-			$table->char('uf',2);
-			//$table->engine = 'InnoDB';
+        Schema::create('cities', function (Blueprint $table) {
+            $table->char('id',7)->primary();
+            $table->string('city');
+            $table->char('region',2);
             $table->timestamps();
-		});
+    		});
     }
 
     /**
@@ -28,6 +28,8 @@ class CreateCityTable extends Migration
      */
     public function down()
     {
-        Schema::drop('cidades');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::drop('cities');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

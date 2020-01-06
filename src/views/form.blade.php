@@ -4,7 +4,6 @@
     "_min_height"=>"435px",
     "_steps"=> [
         ["name" => "Dados Gerais", "view"=> "Entity::form-general"],
-        ["name" => "Formas de Contato", "view"=> "Entity::form-contato"]
       ]
   ])
   @endcomponent

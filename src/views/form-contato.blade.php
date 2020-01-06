@@ -59,14 +59,14 @@
     </div>
     <div class="col-md-4 col-sm-12">
         <div class="form-group">
-            <label for='complemento'>Complemento / Outras Informações</label>
-            <input type="text" id='complemento' name='complemento' class = 'form-control input-lg'/>
+          <label for='complemento'>Complemento / Outras Informações</label>
+          <input type="text" id='complemento' name='complemento' class = 'form-control input-lg'/>
         </div>
     </div>
     <div class="col-md-4 col-sm-12">
         <div class="form-group">
-            <label for='cidade'>Cidade / UF</label>
-            <input type="text" id='cidade' name='cidade' class = 'form-control input-lg' />
+          <label for='cidade'>Cidade / UF</label>
+          <input type="text" id='cidade' name='cidade' class = 'form-control input-lg' />
         </div>
     </div>
 </div>
