@@ -77,8 +77,8 @@ new IOService(
           { data: 'cpf_cnpj' },
           { data: 'otica.name', name: 'otica' },
           { data: 'celular1', name: 'celular1' },
-          { data: null, name: 'status' },
           { data: 'created_at', name: 'created_at' },
+          { data: 'status', name: 'status' },
           { data: 'actions', name: 'actions' }
         ],
         columnDefs: [
@@ -87,6 +87,11 @@ new IOService(
           { targets: '__dt_cpfcnpj', searchable: true, orderable: true, width: '10%' },
           { targets: '__dt_origem', searchable: true, orderable: true, width: '10%' },
           { targets: '__dt_celular', searchable: true, orderable: true, width: '10%' },
+          {
+            targets: '__dt_cadastro', type: 'date-br', width: "9%", orderable: true, className: "text-center", render: function (data, type, row) {
+              return moment(data).format('DD/MM/YYYY');
+            }
+          },
           {
             targets: '__dt_s', width: "2%", orderable: true, className: "text-center", render: function (data, type, row) {
               let color;
@@ -113,10 +118,6 @@ new IOService(
             }
           },
           {
-            targets: '__dt_cadastro', type: 'date-br', width: "9%", orderable: true, className: "text-center", render: function (data, type, row) {
-              return moment(data).format('DD/MM/YYYY');
-            }
-          }, {
             targets: '__dt_acoes',
             width: '5%',
             className: 'text-center',
