@@ -27,3 +27,10 @@
   position:relative;
   margin:auto!important;
 }
+
+
+.sts-ativo{color:olivedrab}
+.sts-inativo{color:gray}
+.sts-bloqueado{color:tomato}
+.sts-de-risco{color:orange}
+.sts-avalisado{color:cornflowerblue}

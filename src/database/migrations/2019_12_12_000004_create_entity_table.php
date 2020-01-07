@@ -14,7 +14,7 @@ class CreateEntityTable extends Migration
             $table->char('cod_cliente', 14)->unique(); 
             $table->integer('otica_id')->unsigned();
             $table->integer('group_id')->unsigned()->nullable();
-            $table->enum('status', ['Ativo', 'Inativo', 'Bloqueado'])->default('Ativo');
+            $table->enum('status', ['Ativo', 'Inativo', 'Bloqueado','De Risco','Avalisado'])->default('Ativo');
             $table->string('nome');
             $table->char('rg', 50)->nullable();
             $table->enum('sexo', ['M', 'F', 'I'])->default('F');

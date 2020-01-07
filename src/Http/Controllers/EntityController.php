@@ -20,7 +20,8 @@ class EntityController extends IOController
   }
 
   function list() {
-    $query = Entity::select('id','cpf_cnpj','status','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id')
+    $query = Entity::select('id','cpf_cnpj','status','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
+    ->with('otica')
       ->orderBy('created_at', 'desc')->get();
     return Datatables::of(collect($query))->make(true);
   }

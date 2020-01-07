@@ -52,7 +52,7 @@
           <div class="col-sm-3 col-xs-12">
             <div class="form-group">
               <label for='status'>Situação</label>
-              <select name="status" id="status" class="form-control input-lg mt-1">
+            <select name="status" id="status" class="form-control input-lg mt-1">
                   @foreach($situacao as $r)
                     <option value="{{$r}}">{{$r}}</option>
                   @endforeach
@@ -120,13 +120,19 @@
                 ],
               ],
               [
-                "tab"=>"Referências Pessoais e Comerciais",
+                "tab"=>"Referências/Informações Pessoais e Comerciais",
                 "icon"=>"ico ico-talking",
                 "view"=>"Entity::form-parts.refs",
                 "params"=>[
                 ],
-              ]
-            ]
+              ],
+              [
+                "tab"=>"Outras Observações",
+                "icon"=>"ico ico-talking",
+                "view"=>"Entity::form-parts.details",
+                "params"=>[
+                ],
+              ]            ]
           ])
           @endcomponent
       </div>

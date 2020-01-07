@@ -8,6 +8,11 @@ new IOService(
 
     setTimeout(() => {
       self.tabs['historico'].tab.addClass('disabled')
+
+      // $("#user_name_container").style({ display: 'hidden' })
+      document.getElementById('user_name').firstChild.nodeValue = ''
+
+
       self.tabs['cadastrar'].tab.on('shown.bs.tab', e => {
         IO.active = self
       })
@@ -18,6 +23,19 @@ new IOService(
         self.dt.columns.adjust();
       })
 
+      self.tabs['outras-observacoes'].tab.on('shown.bs.tab', e => {
+        $('#observacao').focus()
+      })
+
+      self.tabs['referenciasinformacoes-pessoais-e-comerciais'].tab.on('shown.bs.tab', e => {
+        $('#refs_pessoais').focus()
+      })
+
+      self.tabs['telefones-e-endereco'].tab.on('shown.bs.tab', e => {
+        $('#celular1').focus()
+      })
+
+
       self.tabs['cadastrar'].tab.tab('show');
     })
 
@@ -27,42 +45,76 @@ new IOService(
         initComplete: function () {
           //parent call
           let api = this.api();
-          this.teste = 10;
+          // this.teste = 10;
           $.fn.dataTable.defaults.initComplete(this);
+
+          api.addDTSelectFilter([
+            { el: $('#ft_loja'), column: 'otica' },
+            { el: $('#ft_status'), column: 'status' },
+          ]);
+
+
+          $('#ft_dtini').pickadate().pickadate('picker').on('render', function () {
+            api.draw()
+          });
+
+          $('#ft_dtfim').pickadate().pickadate('picker').on('render', function () {
+            api.draw()
+          });
+
+
+          api.addDTBetweenDatesFilter({
+            column: 'created_at',
+            min: $('#ft_dtini'),
+            max: $('#ft_dtfim')
+          });
+
         },
         footerCallback: function (row, data, start, end, display) { },
         columns: [
           { data: 'id', name: 'id' },
-          { data: 'nome', name: 'nome' },
-          { data: 'cpf_cnpj', name: 'cpf_cnpj' },
-          { data: 'telefone1', name: 'telefone1' },
+          { data: 'nome' },
+          { data: 'cpf_cnpj' },
+          { data: 'otica.name', name: 'otica' },
           { data: 'celular1', name: 'celular1' },
-          { data: null, name: null },
+          { data: null, name: 'status' },
+          { data: 'created_at', name: 'created_at' },
           { data: 'actions', name: 'actions' }
         ],
         columnDefs: [
           { targets: '__dt_', width: "3%", searchable: true, orderable: true },
           { targets: '__dt_nome', searchable: true, orderable: true, width: 'auto' },
           { targets: '__dt_cpfcnpj', searchable: true, orderable: true, width: '10%' },
-          { targets: '__dt_telefone', searchable: true, orderable: true, width: '10%' },
+          { targets: '__dt_origem', searchable: true, orderable: true, width: '10%' },
           { targets: '__dt_celular', searchable: true, orderable: true, width: '10%' },
           {
             targets: '__dt_s', width: "2%", orderable: true, className: "text-center", render: function (data, type, row) {
               let color;
               switch (row.status) {
                 case 'Ativo':
-                  color = "text-success";
+                  color = "sts-ativo";
                   break
                 case 'Bloqueado':
-                  color = "text-danger";
+                  color = "sts-bloqueado";
+                  break
+                case 'De Risco':
+                  color = 'sts-de-risco';
+                  break
+                case 'Avalisado':
+                  color = "sts-avalisado";
                   break
                 case 'Inativo':
                 default:
-                  color = "text-muted";
+                  color = "sts-inativo";
                   break
               }
 
-              return self.dt.addDTIcon({ ico: 'ico-dot', title: row.status, value: 1, pos: 'left', _class: color });
+              return self.dt.addDTIcon({ ico: 'ico-dot', title: row.status, value: row.status, pos: 'left', _class: color });
+            }
+          },
+          {
+            targets: '__dt_cadastro', type: 'date-br', width: "9%", orderable: true, className: "text-center", render: function (data, type, row) {
+              return moment(data).format('DD/MM/YYYY');
             }
           }, {
             targets: '__dt_acoes',
@@ -185,6 +237,21 @@ new IOService(
     // });
 
     $('#zipCode').mask('00000-000');
+
+    $('#status').on('change', function (e) {
+      const val = $(e.currentTarget).val()
+      if (val === 'Avalisado') {
+        self.tabs['outras-observacoes'].tab.tab('show');
+        self.fv[0]
+          .enableValidator('observacao', 'notEmpty')
+          .revalidateField('observacao');
+      }
+      else {
+        self.fv[0]
+          .disableValidator('observacao', 'notEmpty')
+          .revalidateField('observacao');
+      }
+    })
 
     let form = document.getElementById(self.dfId);
 
@@ -309,8 +376,15 @@ new IOService(
                 message: 'E-mail Inválido'
               }
             }
-          }
-          // has_images: {
+          },
+          observacao: {
+            validators: {
+              notEmpty: {
+                enabled: false,
+                message: 'Campo obrigatório!'
+              },
+            }
+          },          // has_images: {
           //   validators: {
           //     callback: {
           //       message: 'Insira a logo da empresa!',
@@ -479,6 +553,11 @@ new IOService(
   ███████╗╚██████╔╝╚██████╗██║  ██║███████╗    ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝    ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+function isAvalisado(s) {
+  console.log('s', s)
+}
+
+
 function getCep(value) {
   return new Promise(function (resolve, reject) {
     if (value.replace(/\D/g, '').length < 8)
@@ -614,6 +693,7 @@ function view(self) {
 
 
       self.tabs['historico'].tab.removeClass('disabled')
+      document.getElementById('user_name').firstChild.nodeValue = d.nome
     },
     onError: function (self) {
 

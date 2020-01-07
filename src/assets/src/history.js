@@ -37,7 +37,7 @@ new IOService(
           confirmButtonText: 'OK',
           type: 'success',
           onClose: function () {
-            self.unload(self);
+            self.callbacks.unload(self);
             self.dt.ajax.reload()
             self.dt.columns.adjust();
           }
@@ -181,6 +181,12 @@ new IOService(
       self.extraData.entityId = IO.services.entity.toView.id
     })
 
+    self.onNew = self => {
+      self.unload(self);
+      document.location.reload()      // self.unload()
+      // self.callbacks.unload(self)
+    }
+
     // self.callbacks.view = histVew(self);
 
     // self.callbacks.update.onSuccess = () => {
@@ -214,14 +220,8 @@ new IOService(
     // };
 
     self.callbacks.unload = self => {
-
-
-      // $(
-      //   '#cpf_cnpj, #name,#email, #address, #address2, #city,#city_id, #state, #__form_edit'
-      // ).val('');
-      // $('#fb-id, #fb-version, #fb-locale, #fb-longToken').val('');
-
-      // self.dz.removeAllFiles(true);
+      console.log('agora sim!!')
+      $('#vl_entrada, #vl_compra, #dt_compra, #product, #details').val('');
     };
   }
 

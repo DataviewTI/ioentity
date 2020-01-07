@@ -9,6 +9,11 @@
       @include('Entity::form-hist.hist-list')
   </div>
   <div class="col-xs-12 col-sm-4">
+    <div class = 'row mb-2' id="user_name_container">
+      <div class="col-sm-12 col-xs-12 px-3">
+        <h6 class="my-auto py-2 mx-0 mb-2" style="border-bottom:1px #ccc solid"><span class="ico ico-user"></span><span class="ml-2 mt-1" id="user_name">&nbsp;</span></h6>
+      </div>
+    </div>
     <div class = 'row'>
       <div class="col-sm-12 col-xs-12">
         <div class="form-group selectContainer">
@@ -42,7 +47,7 @@
       </div>
     </div>
 
-    <div class = 'row' class="b-red">
+    <div class = 'row'>
       <div class="col-xs-12 col-sm-12">
         <div class="form-group">
           <label for='product'>Produto</label>
@@ -55,7 +60,7 @@
       <div class="col-xs-12 col-sm-12">
         <div class="form-group">
           <label for='details'>Observações</label>
-          <textarea id='details' name='details' class='form-control input-lg' style="height:80px"></textarea>
+          <textarea id='details' name='details' class='form-control input-lg' style="height:50px"></textarea>
         </div>
       </div>
     </div>
