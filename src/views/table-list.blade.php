@@ -2,7 +2,7 @@
   use Dataview\IntranetOne\IntranetOne;
   use Dataview\IOEntity\Models\Otica;
   $oticas = Otica::select('id','alias','main','name')->orderBy('main')->orderBy('alias')->get();
-  $situacao = IntranetOne::getEnumValues('entities','status');
+  $situacao = IntranetOne::getEnumValues('entity_group','status');
 @endphp
 
 	<div class = 'row dt-filters-container'>
@@ -28,6 +28,7 @@
         <label for = 'ft_status' class = 'bmd-label-static'><i class = 'ico ico-filter'></i> Situação Cliente</label>
         <select id = 'ft_status' class = 'form-control form-control-lg'>
           <option value = ''></option>
+          <option value = 'no-history'>Sem Histórico</option>
             @foreach($situacao as $r)
               <option value="{{$r}}">{{$r}}</option>
             @endforeach

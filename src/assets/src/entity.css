@@ -1,5 +1,5 @@
-.__sortable-list{
-  height:350px;
+.__sortable-list {
+  height: 350px;
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11,26 +11,38 @@
       ╚══════╝    ╚═╝    ╚══════╝    ╚══════╝    ╚══════╝
                                                         
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-.__dimensions tr td{
-  padding-bottom:3px;
+.__dimensions tr td {
+  padding-bottom: 3px;
 }
 
-.__dimensions tr th{
-  font-weight:500;
+.__dimensions tr th {
+  font-weight: 500;
 }
 
-.checkbox-decorator{
-  padding:0!important;
+.checkbox-decorator {
+  padding: 0 !important;
 }
 
-.checkbox .checkbox-decorator{
-  position:relative;
-  margin:auto!important;
+.checkbox .checkbox-decorator {
+  position: relative;
+  margin: auto !important;
 }
 
-
-.sts-ativo{color:olivedrab}
-.sts-inativo{color:gray}
-.sts-bloqueado{color:tomato}
-.sts-de-risco{color:orange}
-.sts-avalisado{color:cornflowerblue}
+.sts-normal {
+  color: olivedrab;
+}
+.sts-inativo {
+  color: gray;
+}
+.sts-bloqueado {
+  color: tomato;
+}
+.sts-de-risco {
+  color: orange;
+}
+.sts-avalisado {
+  color: cornflowerblue;
+}
+.sts-no-history {
+  color: gainsboro;
+}

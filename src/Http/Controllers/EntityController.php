@@ -20,9 +20,12 @@ class EntityController extends IOController
   }
 
   function list() {
-    $query = Entity::select('id','cpf_cnpj','status','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
-    ->with('otica')
-      ->orderBy('created_at', 'desc')->get();
+    $query = Entity::select('id','cpf_cnpj','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
+    ->with(['otica', 'groups' => function($query){
+        $query->select('status')->orderBy('entity_group.id','desc')->limit(2);
+		}])
+    ->orderBy('created_at', 'desc')->get();
+
     return Datatables::of(collect($query))->make(true);
   }
 
@@ -31,8 +34,9 @@ class EntityController extends IOController
     
     $query = filled($ent) ? $ent
       ->groups()
-      ->select('entity_group.id','otica_id','date','value','payment','product','details','alias')
+      ->select('entity_group.id','otica_id','date','value','payment','product','details','alias','status')
       ->leftJoin('oticas','oticas.id','entity_group.otica_id')
+      ->orderBy('entity_group.id','desc')
       ->get() : [];
 
     return Datatables::of(collect($query))->make(true);
@@ -81,7 +85,8 @@ class EntityController extends IOController
             "value"=>$r->value,
             "payment"=>$r->payment,
             "product"=>$r->product,
-            "details"=>$r->details
+            "details"=>$r->details,
+            "status"=>$r->status
           ]);
     }
 
@@ -121,7 +126,7 @@ class EntityController extends IOController
 
     $_old = Entity::find($id);
 
-    $upd = ['status','otica_id','nome','rg','sexo','local_trabalho','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','refs_comerciais','refs_pessoais'];
+    $upd = ['otica_id','nome','rg','sexo','local_trabalho','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','refs_comerciais','refs_pessoais'];
 
     foreach($upd as $u)
       $_old->{$u} = optional($_new)->{$u};
@@ -156,6 +161,19 @@ class EntityController extends IOController
     return json_encode(['sts' => $obj]);
   }
 
+
+  public function deleteHist($eid,$gid){
+    $check = $this->__delete();
+    if (!$check['status']) {
+        return response()->json(['errors' => $check['errors']], $check['code']);
+    }
+
+    $obj = Entity::find($eid);
+    $x = $obj->groups()->detach($gid);
+    return json_encode(['sts' => $x]);
+  }
+
+  
   public function checkId($id){
     return Entity::select('razaosocial')->where('id', '=', $id)->get();
   }

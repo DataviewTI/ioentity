@@ -3,7 +3,7 @@
   use Dataview\IOEntity\Models\Otica;
   $ecivil = IntranetOne::getEnumValues('entities','estado_civil');
   $oticas = Otica::select('id','alias','main','name')->orderBy('main')->orderBy('alias')->get();
-  $situacao = IntranetOne::getEnumValues('entities','status');
+  // $situacao = IntranetOne::getEnumValues('entities','status');
 @endphp
 
 <div class = 'row'>
@@ -43,13 +43,13 @@
               <input type="text" id='cpf_cnpj' name='cpf_cnpj' class = 'form-control input-lg' />
             </div>
           </div>
-          <div class="col-sm-6 col-xs-12">
+          <div class="col-sm-9 col-xs-12">
             <div class="form-group">
               <label for='nome_fantasia'>Nome Completo / Nome Fantasia</label>
               <input type="text" id='nome' name='nome' class = 'form-control input-lg' />
             </div>
           </div>
-          <div class="col-sm-3 col-xs-12">
+          {{-- <div class="col-sm-3 col-xs-12">
             <div class="form-group">
               <label for='status'>Situação</label>
             <select name="status" id="status" class="form-control input-lg mt-1">
@@ -58,7 +58,7 @@
                   @endforeach
               </select>
             </div>
-          </div>
+          </div> --}}
         </div>
       </div>
     </div>

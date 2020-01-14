@@ -17,6 +17,7 @@ class CreatePivotEntityGroupTable extends Migration
             $table->decimal('payment')->default(0);
             $table->string('product')->nullable();
             $table->binary('details')->nullable();
+            $table->enum('status', ['Normal', 'Inativo', 'Bloqueado','De Risco','Avalisado'])->default('Normal');
             $table->timestamps();
             $table->foreign('otica_id')->references('id')->on('oticas')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('entity_id')->references('id')->on('entities')->onDelete('cascade')->onUpdate('cascade');

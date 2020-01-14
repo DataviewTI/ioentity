@@ -5,44 +5,44 @@ new IOService(
     wz: $('#default-wizard').wizard()
   },
   self => {
-
     setTimeout(() => {
-      self.tabs['historico'].tab.addClass('disabled')
+      self.tabs['historico'].tab.addClass('disabled');
 
       // $("#user_name_container").style({ display: 'hidden' })
-      document.getElementById('user_name').firstChild.nodeValue = ''
-
+      document.getElementById('user_name').firstChild.nodeValue = '';
 
       self.tabs['cadastrar'].tab.on('shown.bs.tab', e => {
-        IO.active = self
-      })
+        IO.active = self;
+      });
 
       self.tabs['listar'].tab.on('shown.bs.tab', e => {
-        IO.active = self
-        self.dt.ajax.reload()
+        IO.active = self;
+        self.dt.ajax.reload();
         self.dt.columns.adjust();
-      })
+      });
 
       self.tabs['outras-observacoes'].tab.on('shown.bs.tab', e => {
-        $('#observacao').focus()
-      })
+        $('#observacao').focus();
+      });
 
-      self.tabs['referenciasinformacoes-pessoais-e-comerciais'].tab.on('shown.bs.tab', e => {
-        $('#refs_pessoais').focus()
-      })
+      self.tabs['referenciasinformacoes-pessoais-e-comerciais'].tab.on(
+        'shown.bs.tab',
+        e => {
+          $('#refs_pessoais').focus();
+        }
+      );
 
       self.tabs['telefones-e-endereco'].tab.on('shown.bs.tab', e => {
-        $('#celular1').focus()
-      })
-
+        $('#celular1').focus();
+      });
 
       self.tabs['cadastrar'].tab.tab('show');
-    })
+    });
 
     self.dt = $('#default-table')
       .DataTable({
         ajax: self.path + '/list',
-        initComplete: function () {
+        initComplete: function() {
           //parent call
           let api = this.api();
           // this.teste = 10;
@@ -50,27 +50,30 @@ new IOService(
 
           api.addDTSelectFilter([
             { el: $('#ft_loja'), column: 'otica' },
-            { el: $('#ft_status'), column: 'status' },
+            { el: $('#ft_status'), column: 'groups' }
           ]);
 
+          $('#ft_dtini')
+            .pickadate()
+            .pickadate('picker')
+            .on('render', function() {
+              api.draw();
+            });
 
-          $('#ft_dtini').pickadate().pickadate('picker').on('render', function () {
-            api.draw()
-          });
-
-          $('#ft_dtfim').pickadate().pickadate('picker').on('render', function () {
-            api.draw()
-          });
-
+          $('#ft_dtfim')
+            .pickadate()
+            .pickadate('picker')
+            .on('render', function() {
+              api.draw();
+            });
 
           api.addDTBetweenDatesFilter({
             column: 'created_at',
             min: $('#ft_dtini'),
             max: $('#ft_dtfim')
           });
-
         },
-        footerCallback: function (row, data, start, end, display) { },
+        footerCallback: function(row, data, start, end, display) {},
         columns: [
           { data: 'id', name: 'id' },
           { data: 'nome' },
@@ -78,43 +81,88 @@ new IOService(
           { data: 'otica.name', name: 'otica' },
           { data: 'celular1', name: 'celular1' },
           { data: 'created_at', name: 'created_at' },
-          { data: 'status', name: 'status' },
+          { data: 'groups', name: 'groups' },
           { data: 'actions', name: 'actions' }
         ],
         columnDefs: [
-          { targets: '__dt_', width: "3%", searchable: true, orderable: true },
-          { targets: '__dt_nome', searchable: true, orderable: true, width: 'auto' },
-          { targets: '__dt_cpfcnpj', searchable: true, orderable: true, width: '10%' },
-          { targets: '__dt_origem', searchable: true, orderable: true, width: '10%' },
-          { targets: '__dt_celular', searchable: true, orderable: true, width: '10%' },
+          { targets: '__dt_', width: '3%', searchable: true, orderable: true },
           {
-            targets: '__dt_cadastro', type: 'date-br', width: "9%", orderable: true, className: "text-center", render: function (data, type, row) {
+            targets: '__dt_nome',
+            searchable: true,
+            orderable: true,
+            width: 'auto'
+          },
+          {
+            targets: '__dt_cpfcnpj',
+            searchable: true,
+            orderable: true,
+            width: '10%'
+          },
+          {
+            targets: '__dt_origem',
+            searchable: true,
+            orderable: true,
+            width: '10%'
+          },
+          {
+            targets: '__dt_celular',
+            searchable: true,
+            orderable: true,
+            width: '10%'
+          },
+          {
+            targets: '__dt_cadastro',
+            type: 'date-br',
+            width: '9%',
+            orderable: true,
+            className: 'text-center',
+            render: function(data, type, row) {
               return moment(data).format('DD/MM/YYYY');
             }
           },
           {
-            targets: '__dt_s', width: "2%", orderable: true, className: "text-center", render: function (data, type, row) {
+            targets: '__dt_s',
+            width: '2%',
+            orderable: true,
+            className: 'text-center',
+            render: function(data, type, row) {
+              console.log('ha', data);
               let color;
-              switch (row.status) {
-                case 'Ativo':
-                  color = "sts-ativo";
-                  break
+              if (!data.length)
+                return self.dt.addDTIcon({
+                  ico: 'ico-dot',
+                  title: 'Sem Histórico',
+                  value: 'no-history',
+                  pos: 'left',
+                  _class: 'sts-no-history'
+                });
+
+              switch (data[0].status) {
+                case 'Normal':
+                  color = 'sts-normal';
+                  break;
                 case 'Bloqueado':
-                  color = "sts-bloqueado";
-                  break
+                  color = 'sts-bloqueado';
+                  break;
                 case 'De Risco':
                   color = 'sts-de-risco';
-                  break
+                  break;
                 case 'Avalisado':
-                  color = "sts-avalisado";
-                  break
+                  color = 'sts-avalisado';
+                  break;
                 case 'Inativo':
                 default:
-                  color = "sts-inativo";
-                  break
+                  color = 'sts-inativo';
+                  break;
               }
 
-              return self.dt.addDTIcon({ ico: 'ico-dot', title: row.status, value: row.status, pos: 'left', _class: color });
+              return self.dt.addDTIcon({
+                ico: 'ico-dot',
+                title: data[0].status,
+                value: data[0].status,
+                pos: 'left',
+                _class: color
+              });
             }
           },
           {
@@ -123,7 +171,7 @@ new IOService(
             className: 'text-center',
             searchable: false,
             orderable: false,
-            render: function (data, type, row, y) {
+            render: function(data, type, row, y) {
               return self.dt.addDTButtons({
                 buttons: [
                   { ico: 'ico-edit', _class: 'text-info', title: 'editar' },
@@ -134,11 +182,11 @@ new IOService(
           }
         ]
       })
-      .on('click', '.btn-dt-button[data-original-title=editar]', function () {
+      .on('click', '.btn-dt-button[data-original-title=editar]', function() {
         var data = self.dt.row($(this).parents('tr')).data();
         self.view(data.id);
       })
-      .on('click', '.ico-trash', function () {
+      .on('click', '.ico-trash', function() {
         var data = self.dt.row($(this).parents('tr')).data();
         self.delete(data.id);
       })
@@ -146,53 +194,60 @@ new IOService(
       //   var data = self.dt.row($(this).parents('tr')).data();
       //   preview({ id: data.id });
       // })
-      .on('draw.dt', function () {
+      .on('draw.dt', function() {
         $('[data-toggle="tooltip"]').tooltip();
       });
 
-    $('#cpf_cnpj').removeAttr('readonly').mask($.jMaskGlobals.CPFCNPJMaskBehavior, {
-      onKeyPress: function (val, e, field, options) {
-        var args = Array.from(arguments);
-        args.push(iscpf => {
-          if (self.fv !== null) {
-            if (iscpf) {
-              self.fv[0]
-                .disableValidator('cpf_cnpj', 'vat')
-                .enableValidator('cpf_cnpj', 'id')
-                .revalidateField('cpf_cnpj');
-            } else {
-              self.fv[0]
-                .disableValidator('cpf_cnpj', 'id')
-                // .enableValidator('cpf_cnpj', 'vat')
-                .revalidateField('cpf_cnpj');
+    $('#cpf_cnpj')
+      .removeAttr('readonly')
+      .mask($.jMaskGlobals.CPFCNPJMaskBehavior, {
+        onKeyPress: function(val, e, field, options) {
+          var args = Array.from(arguments);
+          args.push(iscpf => {
+            if (self.fv !== null) {
+              if (iscpf) {
+                self.fv[0]
+                  .disableValidator('cpf_cnpj', 'vat')
+                  .enableValidator('cpf_cnpj', 'id')
+                  .revalidateField('cpf_cnpj');
+              } else {
+                self.fv[0]
+                  .disableValidator('cpf_cnpj', 'id')
+                  // .enableValidator('cpf_cnpj', 'vat')
+                  .revalidateField('cpf_cnpj');
+              }
             }
-          }
-        });
-        field.mask($.jMaskGlobals.CPFCNPJMaskBehavior.apply({}, args), options);
-      },
-      onComplete: function (val, e, field) { }
-    });
+          });
+          field.mask(
+            $.jMaskGlobals.CPFCNPJMaskBehavior.apply({}, args),
+            options
+          );
+        },
+        onComplete: function(val, e, field) {}
+      });
 
-    $('#dt_nascimento').pickadate({
-      selectYears: 99,
-      formatSubmit: 'yyyy-mm-dd 00:00:00',
-      max: 'today'
-    }).pickadate('picker').on('render', function () {
-      self.fv[0].revalidateField('dt_nascimento');
-    });
-
+    $('#dt_nascimento')
+      .pickadate({
+        selectYears: 99,
+        formatSubmit: 'yyyy-mm-dd 00:00:00',
+        max: 'today'
+      })
+      .pickadate('picker')
+      .on('render', function() {
+        self.fv[0].revalidateField('dt_nascimento');
+      });
 
     $('#telefone1, #telefone2, #celular1, #celular2').mask(
       $.jMaskGlobals.SPMaskBehavior,
       {
-        onKeyPress: function (val, e, field, options) {
+        onKeyPress: function(val, e, field, options) {
           self.fv[0].revalidateField($(field).attr('id'));
           field.mask(
             $.jMaskGlobals.SPMaskBehavior.apply({}, arguments),
             options
           );
         },
-        onComplete: function (val, e, field) {
+        onComplete: function(val, e, field) {
           $(field)
             .parent()
             .parent()
@@ -238,21 +293,6 @@ new IOService(
     // });
 
     $('#zipCode').mask('00000-000');
-
-    $('#status').on('change', function (e) {
-      const val = $(e.currentTarget).val()
-      if (val === 'Avalisado') {
-        self.tabs['outras-observacoes'].tab.tab('show');
-        self.fv[0]
-          .enableValidator('observacao', 'notEmpty')
-          .revalidateField('observacao');
-      }
-      else {
-        self.fv[0]
-          .disableValidator('observacao', 'notEmpty')
-          .revalidateField('observacao');
-      }
-    })
 
     let form = document.getElementById(self.dfId);
 
@@ -309,7 +349,7 @@ new IOService(
                   message: 'The avatar is required'
                 },
                 enabled: true,
-                promise: function (input) {
+                promise: function(input) {
                   return getCep(input.value);
                 }
               }
@@ -377,15 +417,16 @@ new IOService(
                 message: 'E-mail Inválido'
               }
             }
-          },
-          observacao: {
-            validators: {
-              notEmpty: {
-                enabled: false,
-                message: 'Campo obrigatório!'
-              },
-            }
-          },          // has_images: {
+          }
+          // observacao: {
+          //   validators: {
+          //     notEmpty: {
+          //       enabled: false,
+          //       message: 'Campo obrigatório!'
+          //     }
+          //   }
+          // }
+          // has_images: {
           //   validators: {
           //     callback: {
           //       message: 'Insira a logo da empresa!',
@@ -414,7 +455,7 @@ new IOService(
       }
     )
       .setLocale('pt_BR', FormValidation.locales.pt_BR)
-      .on('core.validator.validated', function (e) {
+      .on('core.validator.validated', function(e) {
         if (e.field === 'zipCode' && e.validator === 'promise') {
           if (e.result.meta.data !== null) setCEP(e.result.meta.data, self);
           else {
@@ -447,10 +488,10 @@ new IOService(
       buttons: {
         reorder: false
       },
-      onSuccess: function (file, ret) {
+      onSuccess: function(file, ret) {
         //self.fv[0].revalidateField('has_images');
       },
-      onPreviewLoad: function (_t) {
+      onPreviewLoad: function(_t) {
         if (self.toView !== null) {
           let _conf = self.config.default;
           self.dz.removeAllFiles(true);
@@ -462,21 +503,20 @@ new IOService(
     });
 
     //need to transform wizardActions in a method of Class
-    self.wizardActions(function () {
+    self.wizardActions(function() {
       //self.dz.copy_params.sizes.default = {"w":$('#width').val(),"h":$('#height').val()}
       document
         .getElementById(self.dfId)
         .querySelector("[name='__dz_images']").value = JSON.stringify(
-          self.dz.getOrderedDataImages()
-        );
+        self.dz.getOrderedDataImages()
+      );
       document
         .getElementById(self.dfId)
         .querySelector("[name='__dz_copy_params']").value = JSON.stringify(
-          self.dz.copy_params
-        );
+        self.dz.copy_params
+      );
       // return false;
     });
-
 
     self.callbacks.view = view(self);
     // self.callbacks.update.onSuccess = () => {
@@ -484,11 +524,11 @@ new IOService(
     // }
 
     self.callbacks.delete.onSuccess = data => {
-      console.log('no success do delete')
-      self.callbacks.unload(self)
-    }
+      console.log('no success do delete');
+      self.callbacks.unload(self);
+    };
 
-    self.override.create.onSuccess = (data) => {
+    self.override.create.onSuccess = data => {
       if (data.success) {
         // try {
         //   self.tabs['listar'].setState(true);
@@ -499,7 +539,7 @@ new IOService(
           title: 'Cadastro efetuado com sucesso!',
           confirmButtonText: 'OK',
           type: 'success',
-          onClose: function () {
+          onClose: function() {
             self.unload(self);
             self.view(data.data.id);
             // setTimeout(() => {
@@ -524,11 +564,9 @@ new IOService(
     // };
 
     self.callbacks.unload = self => {
+      self.tabs['historico'].tab.addClass('disabled');
 
-      self.tabs['historico'].tab.addClass('disabled')
-
-      $('#cpf_cnpj, #cod_cliente')
-        .removeAttr('readonly')
+      $('#cpf_cnpj, #cod_cliente').removeAttr('readonly');
 
       $(
         '#cod_cliente,#cpf_cnpj, #nome, #email, #address, #address2, #city,#city_id, #state'
@@ -539,9 +577,9 @@ new IOService(
 
     self.onNew = self => {
       self.unload(self);
-      document.location.reload()      // self.unload()
+      document.location.reload(); // self.unload()
       // self.callbacks.unload(self)
-    }
+    };
   }
 ); //the end ??
 
@@ -554,13 +592,10 @@ new IOService(
   ███████╗╚██████╔╝╚██████╗██║  ██║███████╗    ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝    ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-function isAvalisado(s) {
-  console.log('s', s)
-}
-
+function isAvalisado(s) {}
 
 function getCep(value) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     if (value.replace(/\D/g, '').length < 8)
       resolve({
         valid: false,
@@ -605,7 +640,7 @@ function getCep(value) {
 
 function view(self) {
   return {
-    onSuccess: function (data) {
+    onSuccess: function(data) {
       const d = data;
 
       // $('#__form_edit').val(d.id);
@@ -628,7 +663,6 @@ function view(self) {
         .attr('readonly', true)
         .trigger('input');
 
-
       if ($('#cpf_cnpj').cleanVal().length == 11) {
         self.fv[0]
           .disableValidator('cpf_cnpj', 'vat')
@@ -642,7 +676,7 @@ function view(self) {
       }
 
       $('#nome').val(d.nome);
-      $('#status').val(d.status);
+      // $('#status').val(d.status);
       $('#rg').val(d.rg);
       $('#sexo').val(d.sexo);
       $('#estado_civil').val(d.estado_civil);
@@ -654,7 +688,6 @@ function view(self) {
           .pickadate('picker')
           .set('select', [dtn[0], dtn[1] - 1, dtn[2]]);
       }
-
 
       $('#refs_pessoais').val(d.refs_pessoais);
       $('#refs_comerciais').val(d.refs_comerciais);
@@ -679,7 +712,6 @@ function view(self) {
         .val(d.email)
         .trigger('input');
 
-
       $('#zipCode')
         .val(d.zipCode)
         .trigger('input');
@@ -689,15 +721,12 @@ function view(self) {
 
         $('#address').val(d.address);
         $('#address2').val(d.address2);
-
       });
 
-
-      self.tabs['historico'].tab.removeClass('disabled')
-      document.getElementById('user_name').firstChild.nodeValue = d.nome
+      self.tabs['historico'].tab.removeClass('disabled');
+      document.getElementById('user_name').firstChild.nodeValue = d.nome;
     },
-    onError: function (self) {
-
+    onError: function(self) {
       console.log('executa algo no erro do callback', this);
     }
   };

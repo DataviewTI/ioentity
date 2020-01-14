@@ -54,7 +54,7 @@ class Entity extends IOModel
     }
 
     public function groups(){
-      return $this->belongsToMany('Dataview\IntranetOne\Group')->withPivot('otica_id','date','value','payment','product','details');
+      return $this->belongsToMany('Dataview\IntranetOne\Group')->withPivot('otica_id','date','value','payment','product','details','status');
     }
 
 

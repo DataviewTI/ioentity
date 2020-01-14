@@ -15,6 +15,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['web','admin'], 'as' => 'adm
     Route::post('history/create', 'EntityController@historyCreate');
     Route::post('update/{id}', 'EntityController@update');
     Route::post('history/update/{id}', 'EntityController@update');
+    Route::get('history/delete/{eid}/{gid}', 'EntityController@deleteHist');
     Route::get('delete/{id}', 'EntityController@delete');			
   });
 });
