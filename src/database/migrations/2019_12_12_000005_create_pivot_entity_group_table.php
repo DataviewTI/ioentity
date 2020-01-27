@@ -16,6 +16,7 @@ class CreatePivotEntityGroupTable extends Migration
             $table->decimal('value')->default(0);
             $table->decimal('payment')->default(0);
             $table->string('product')->nullable();
+            $table->string('responsible')->nullable();
             $table->binary('details')->nullable();
             $table->enum('status', ['Normal', 'Inativo', 'Bloqueado','De Risco','Avalisado'])->default('Normal');
             $table->timestamps();

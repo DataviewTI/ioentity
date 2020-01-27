@@ -22,7 +22,7 @@ class EntityController extends IOController
   function list() {
     $query = Entity::select('id','cpf_cnpj','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
     ->with(['otica', 'groups' => function($query){
-        $query->select('status')->orderBy('entity_group.id','desc')->limit(2);
+        $query->select('status','entity_group.created_at')->orderBy('entity_group.id','desc')->limit(2);
 		}])
     ->orderBy('created_at', 'desc')->get();
 
@@ -34,7 +34,7 @@ class EntityController extends IOController
     
     $query = filled($ent) ? $ent
       ->groups()
-      ->select('entity_group.id','otica_id','date','value','payment','product','details','alias','status')
+      ->select('entity_group.id','otica_id','date','value','payment','product','responsible','details','alias','status')
       ->leftJoin('oticas','oticas.id','entity_group.otica_id')
       ->orderBy('entity_group.id','desc')
       ->get() : [];
@@ -86,7 +86,8 @@ class EntityController extends IOController
             "payment"=>$r->payment,
             "product"=>$r->product,
             "details"=>$r->details,
-            "status"=>$r->status
+            "status"=>$r->status,
+            "responsible"=>$r->responsible
           ]);
     }
 

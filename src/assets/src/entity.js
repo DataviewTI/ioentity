@@ -117,7 +117,9 @@ new IOService(
             orderable: true,
             className: 'text-center',
             render: function(data, type, row) {
-              return moment(data).format('DD/MM/YYYY');
+              return !data.length
+                ? moment(data).format('DD/MM/YYYY')
+                : moment(data[0].created_at).format('DD/MM/YYYY');
             }
           },
           {
@@ -126,7 +128,6 @@ new IOService(
             orderable: true,
             className: 'text-center',
             render: function(data, type, row) {
-              console.log('ha', data);
               let color;
               if (!data.length)
                 return self.dt.addDTIcon({

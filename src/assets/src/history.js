@@ -103,12 +103,22 @@ new IOService(
             }
           },
           {
+            targets: '__dt_responsavel',
+            searchable: true,
+            orderable: true,
+            width: '20%',
+            render: function(data, type, row) {
+              console.log('row', row);
+              return row.responsible || '';
+            }
+          },
+          {
             targets: '__dt_produto',
             searchable: true,
             orderable: true,
             width: 'auto',
             render: function(data, type, row) {
-              return row.pivot.product;
+              return row.product || '';
             }
           },
           {
@@ -134,20 +144,20 @@ new IOService(
               return '';
             }
           },
-          {
-            targets: '__dt_entrada',
-            className: 'text-right',
-            orderable: true,
-            width: '12%',
-            render: function(data, type, row) {
-              if (row.pivot.value > 0)
-                return parseFloat(row.pivot.payment).toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                });
-              return '';
-            }
-          },
+          // {
+          //   targets: '__dt_entrada',
+          //   className: 'text-right',
+          //   orderable: true,
+          //   width: '12%',
+          //   render: function(data, type, row) {
+          //     if (row.pivot.value > 0)
+          //       return parseFloat(row.pivot.payment).toLocaleString('pt-BR', {
+          //         style: 'currency',
+          //         currency: 'BRL'
+          //       });
+          //     return '';
+          //   }
+          // },
           {
             targets: '__dt_s',
             width: '2%',
@@ -190,12 +200,13 @@ new IOService(
             searchable: false,
             orderable: false,
             render: function(data, type, row, y) {
+              let obs = row.pivot.details || 'sem observações';
               return self.dt.addDTButtons({
                 buttons: [
                   {
                     ico: 'ico-eye',
                     _class: 'text-info',
-                    title: 'observações'
+                    title: `${obs}`
                   },
                   { ico: 'ico-trash', _class: 'text-danger', title: 'excluir' }
                 ]
@@ -206,7 +217,7 @@ new IOService(
       })
       .on('click', '.ico-trash', function() {
         var data = self.dt.row($(this).parents('tr')).data();
-        console.log(data)
+        console.log(data);
         self.delete(data.id, {
           url: `${self.path}/history/delete/${IO.services.entity.toView.id}/${data.pivot.group_id}`
         });
@@ -216,7 +227,7 @@ new IOService(
         '.btn-dt-button[data-original-title=observações]',
         function() {
           var data = self.dt.row($(this).parents('tr')).data();
-          console.log('abrir popup com histórico');
+          // console.log('abrir popup com histórico');
           // self.view(data.id);
         }
       )
@@ -266,6 +277,13 @@ new IOService(
               notEmpty: {
                 enabled: false,
                 message: 'Campo obrigatório!'
+              }
+            }
+          },
+          responsible: {
+            validators: {
+              notEmpty: {
+                message: 'Responsável obrigatório!'
               }
             }
           }
@@ -336,7 +354,10 @@ new IOService(
 
     self.callbacks.unload = self => {
       // $('#status').val('')
-      $('#vl_entrada, #vl_compra, #dt_compra, #product, #details').val('');
+      $(
+        '#vl_entrada, #vl_compra, #dt_compra, #product, #details',
+        '#responsible'
+      ).val('');
     };
   }
 ); //the end ??

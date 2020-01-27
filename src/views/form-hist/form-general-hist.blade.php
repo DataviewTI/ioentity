@@ -10,9 +10,9 @@
       @include('Entity::form-hist.hist-list')
   </div>
   <div class="col-xs-12 col-sm-4">
-    <div class = 'row mb-2' id="user_name_container">
-      <div class="col-sm-12 col-xs-12 px-3">
-        <h6 class="my-auto py-2 mx-0 mb-2" style="border-bottom:1px #ccc solid"><span class="ico ico-user text-primary"></span><span class="ml-2 mt-1 text-primary" id="user_name">&nbsp;</span></h6>
+    <div class = 'row inline-block mb-2' id="user_name_container">
+      <div class="col-xs-12 col-mb-9 px-3" style = "margin-top:-50px">
+        <h6 class="my-auto py-2 mx-0 mb-2"><span class="ico ico-user text-primary"></span><span class="ml-2 mt-1 text-primary" id="user_name">&nbsp;</span></h6>
       </div>
     </div>
     <div class = 'row'>
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-    <div class = 'row'>
+    <div class = 'row' style = "margin-top:-20px">
       <div class="col-sm-4 col-xs-12">
         <div class="form-group">
           <label for='dt_compra'>Dt Comp./Consult</label>
@@ -56,18 +56,18 @@
           <input type="text" id='vl_entrada' name='vl_entrada' class = 'form-control input-lg' placeholder="R$ 0,00" />
         </div>
       </div>
-    </div>
-
-    <div class = 'row'>
+      <div class="col-xs-12 col-sm-12">
+        <div class="form-group">
+          <label for='responsible'>Nome do Responsável</label>
+          <input type="text" id='responsible' name='responsible' class = 'form-control input-lg' />
+        </div>
+      </div>      
       <div class="col-xs-12 col-sm-12">
         <div class="form-group">
           <label for='product'>Produto</label>
           <input type="text" id='product' name='product' class = 'form-control input-lg' />
         </div>
       </div>
-    </div>
-
-    <div class = 'row' class="b-red">
       <div class="col-xs-12 col-sm-12">
         <div class="form-group">
           <label for='details'>Observações</label>

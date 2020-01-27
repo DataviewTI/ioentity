@@ -12,10 +12,10 @@
 	"_columns"=> [
 			["title" => "#"],
 			["title" => "Loja"],
+			["title" => "Responsável"],
 			["title" => "Produto"],
 			["title" => "Data"],
 			["title" => "Valor"],
-			["title" => "Entrada"],
 			["title" => "S"],
 			["title" => "Ações"]
 		]

@@ -1,4 +1,4 @@
-<form action = '/admin/entity/history/create' id='hist-form' method = 'post' class = 'form-fit'>
+  <form action = '/admin/entity/history/create' id='hist-form' method = 'post' class = 'form-fit'>
   @component('IntranetOne::io.components.wizard',[
     "_id" => "hist-wizard",
     "_min_height"=>"435px",
