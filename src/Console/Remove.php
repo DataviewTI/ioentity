@@ -11,7 +11,8 @@ class Remove extends IOServiceRemoveCmd
   public function __construct(){
     parent::__construct([
       "service"=>"entity",
-      "tables" =>['entity_group','entities','cities','oticas'],
+      "tables" =>['entity_group','entities','oticas'],
+      "force" =>['cities'],
     ]);
   }
 

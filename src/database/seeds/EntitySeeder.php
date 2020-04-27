@@ -1,8 +1,10 @@
 <?php
 namespace Dataview\IOEntity;
 
+use Dataview\IntranetOne\IntranetOneServiceProvider;
+use Dataview\IntranetOne\Category;
+use Dataview\IntranetOne\City;
 use Dataview\IntranetOne\Service;
-use Dataview\IOEntity\Models\City;
 use Dataview\IOEntity\Models\Otica;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
@@ -55,15 +57,18 @@ class EntitySeeder extends Seeder
             'main' => $o["main"],
           ]);
       }
-
-      $json = File::get(IOEntityServiceProvider::pkgAddr('/assets/src/cities.json'));
-      $data = json_decode($json, true);
-      foreach ($data as $obj) {
-          City::create([
-            'id' => $obj['i'],
-            'city' => $obj['c'],
-            'region' => $obj['u'],
-          ]);
+      
+      if(empty(\DB::table('cities')->select('id')->first())){
+        $json = File::get(IntranetOneServiceProvider::pkgAddr('/assets/src/base/js/data/cities.json'));
+        $data = json_decode($json, true);
+        foreach ($data as $obj) {
+            City::create([
+              'id' => $obj['i'],
+              'city' => $obj['c'],
+              'region' => $obj['u'],
+            ]);
+        }
       }
+
   }
 }
