@@ -58,7 +58,7 @@
       </div>
       <div class="col-xs-12 col-sm-12">
         <div class="form-group">
-          <label for='responsible'>Nome do Responsável</label>
+          <label for='responsible'>Nome da Consultora</label>
           <input type="text" id='responsible' name='responsible' class = 'form-control input-lg' />
         </div>
       </div>      

@@ -43,9 +43,7 @@ new IOService(
       .DataTable({
         ajax: self.path + "/list",
         initComplete: function() {
-          //parent call
           let api = this.api();
-          // this.teste = 10;
           $.fn.dataTable.defaults.initComplete(this);
 
           api.addDTSelectFilter([
@@ -301,13 +299,13 @@ new IOService(
       form.querySelector('.step-pane[data-step="1"]'),
       {
         fields: {
-          cod_cliente: {
-            validators: {
-              notEmpty: {
-                message: "código obrigatório",
-              },
-            },
-          },
+          // cod_cliente: {
+          //   validators: {
+          //     notEmpty: {
+          //       message: "código obrigatório",
+          //     },
+          //   },
+          // },
           cpf_cnpj: {
             validators: {
               notEmpty: {
@@ -567,7 +565,8 @@ new IOService(
     self.callbacks.unload = (self) => {
       self.tabs["historico"].tab.addClass("disabled");
 
-      $("#cpf_cnpj, #cod_cliente").removeAttr("readonly");
+      // $("#cpf_cnpj, #cod_cliente").removeAttr("readonly");
+      $("#cpf_cnpj").removeAttr("readonly");
 
       $(
         "#cod_cliente,#cpf_cnpj, #nome, #email, #address, #address2, #city,#city_id, #state"
@@ -660,10 +659,9 @@ function view(self) {
         .attr("readonly", true)
         .trigger("input");
 
-      $("#cod_cliente")
-        .val(d.cod_cliente)
-        .attr("readonly", true)
-        .trigger("input");
+      $("#cod_cliente").val(d.cod_cliente);
+      // .attr("readonly", true)
+      // .trigger("input");
 
       if ($("#cpf_cnpj").cleanVal().length == 11) {
         self.fv[0]

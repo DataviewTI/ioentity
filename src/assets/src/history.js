@@ -3,11 +3,11 @@ new IOService(
     name: "History",
     dfId: "hist-form",
     path: "entity",
-    wz: $("#hist-wizard").wizard()
+    wz: $("#hist-wizard").wizard(),
   },
   function(self) {
     setTimeout(() => {
-      self.tabs["historico"].tab.on("shown.bs.tab", e => {
+      self.tabs["historico"].tab.on("shown.bs.tab", (e) => {
         IO.active = self;
         self.dt.ajax.url(
           `${self.path}/history/list/${IO.services.entity.toView &&
@@ -47,14 +47,14 @@ new IOService(
     $("#vl_compra, #vl_entrada").maskMoney({
       prefix: "R$ ",
       decimal: ",",
-      thousands: "."
+      thousands: ".",
     });
 
     $("#vl_compra").on("keyup", function(e) {
       self.fv[0].revalidateField($(this).attr("id"));
     });
 
-    self.override.create.onSuccess = data => {
+    self.override.create.onSuccess = (data) => {
       if (data.success) {
         self.callbacks.create.onSuccess(data);
         HoldOn.close();
@@ -66,7 +66,7 @@ new IOService(
             self.callbacks.unload(self);
             self.dt.ajax.reload();
             self.dt.columns.adjust();
-          }
+          },
         });
       }
     };
@@ -89,7 +89,7 @@ new IOService(
           { data: null },
           { data: null },
           { data: "status", name: "status" },
-          { data: null }
+          { data: null },
         ],
         columnDefs: [
           { targets: "__dt_", width: "3%", searchable: true, orderable: true },
@@ -100,7 +100,7 @@ new IOService(
             width: "13%",
             render: function(data, type, row) {
               return row.alias;
-            }
+            },
           },
           {
             targets: "__dt_responsavel",
@@ -108,9 +108,8 @@ new IOService(
             orderable: true,
             width: "20%",
             render: function(data, type, row) {
-              console.log("row", row);
               return row.responsible || "";
-            }
+            },
           },
           {
             targets: "__dt_produto",
@@ -119,7 +118,7 @@ new IOService(
             width: "auto",
             render: function(data, type, row) {
               return row.product || "";
-            }
+            },
           },
           {
             targets: "__dt_data",
@@ -128,7 +127,7 @@ new IOService(
             className: "text-center",
             render: function(data, type, row) {
               return moment(row.pivot.date).format("DD/MM/YYYY");
-            }
+            },
           },
           {
             targets: "__dt_valor",
@@ -139,10 +138,10 @@ new IOService(
               if (row.pivot.value > 0)
                 return parseFloat(row.pivot.value).toLocaleString("pt-BR", {
                   style: "currency",
-                  currency: "BRL"
+                  currency: "BRL",
                 });
               return "";
-            }
+            },
           },
           // {
           //   targets: '__dt_entrada',
@@ -189,9 +188,9 @@ new IOService(
                 title: row.status,
                 value: row.status,
                 pos: "left",
-                _class: color
+                _class: color,
               });
-            }
+            },
           },
           {
             targets: "__dt_acoes",
@@ -206,20 +205,19 @@ new IOService(
                   {
                     ico: "ico-eye",
                     _class: "text-info",
-                    title: `${obs}`
+                    title: `${obs}`,
                   },
-                  { ico: "ico-trash", _class: "text-danger", title: "excluir" }
-                ]
+                  { ico: "ico-trash", _class: "text-danger", title: "excluir" },
+                ],
               });
-            }
-          }
-        ]
+            },
+          },
+        ],
       })
       .on("click", ".ico-trash", function() {
         var data = self.dt.row($(this).parents("tr")).data();
-        console.log(data);
         self.delete(data.id, {
-          url: `${self.path}/history/delete/${IO.services.entity.toView.id}/${data.pivot.group_id}`
+          url: `${self.path}/history/delete/${IO.services.entity.toView.id}/${data.pivot.group_id}`,
         });
       })
       .on(
@@ -238,7 +236,7 @@ new IOService(
     $("#dt_compra")
       .pickadate({
         formatSubmit: "yyyy-mm-dd 00:00:00",
-        max: "today"
+        max: "today",
       })
       .pickadate("picker")
       .on("render", function() {
@@ -253,13 +251,13 @@ new IOService(
           dt_compra: {
             validators: {
               notEmpty: {
-                message: "Data Obrigatória"
+                message: "Data Obrigatória",
               },
               date: {
                 format: "DD/MM/YYYY",
-                message: "Informe uma data válida!"
-              }
-            }
+                message: "Informe uma data válida!",
+              },
+            },
           },
           vl_compra: {
             validators: {
@@ -268,25 +266,25 @@ new IOService(
                 callback: function(value, validator, $field) {
                   let v = $("#vl_compra").maskMoney("unmasked")[0];
                   return v > 0;
-                }
-              }
-            }
+                },
+              },
+            },
           },
           details: {
             validators: {
               notEmpty: {
                 enabled: false,
-                message: "Campo obrigatório!"
-              }
-            }
+                message: "Campo obrigatório!",
+              },
+            },
           },
           responsible: {
             validators: {
               notEmpty: {
-                message: "Responsável obrigatório!"
-              }
-            }
-          }
+                message: "Responsável obrigatório!",
+              },
+            },
+          },
         },
         plugins: {
           trigger: new FormValidation.plugins.Trigger(),
@@ -295,9 +293,9 @@ new IOService(
           icon: new FormValidation.plugins.Icon({
             valid: "fv-ico ico-check",
             invalid: "fv-ico ico-close",
-            validating: "fv-ico ico-gear ico-spin"
-          })
-        }
+            validating: "fv-ico ico-gear ico-spin",
+          }),
+        },
       }
     )
       .setLocale("pt_BR", FormValidation.locales.pt_BR)
@@ -314,7 +312,7 @@ new IOService(
       self.extraData.entityId = IO.services.entity.toView.id;
     });
 
-    self.onNew = self => {
+    self.onNew = (self) => {
       self.unload(self);
       document.location.reload(); // self.unload()
       // self.callbacks.unload(self)
@@ -352,7 +350,7 @@ new IOService(
     //   }
     // };
 
-    self.callbacks.unload = self => {
+    self.callbacks.unload = (self) => {
       // $('#status').val('')
       $(
         "#vl_entrada, #vl_compra, #dt_compra, #product, #details",
@@ -384,22 +382,6 @@ function histView(self) {
     },
     onError: function(self) {
       console.log("executa algo no erro do callback");
-    }
+    },
   };
 }
-
-// function delete(self) {
-//   return {
-//     onSuccess: function(data) {
-//       const _conf = data;
-//       // $('#__form_edit').val(_conf.id);
-//       $('#loja_origem').val(_conf.loja_origem);
-//       $('#status').val(d.status);
-
-//       // $('#refs_comerciais').val(_conf.refs_comerciais);
-//     },
-//     onError: function(self) {
-//       console.log('executa algo no erro do callback');
-//     }
-//   };
-// }

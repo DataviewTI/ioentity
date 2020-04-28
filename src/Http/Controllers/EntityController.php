@@ -22,7 +22,7 @@ class EntityController extends IOController
   function list() {
     $query = Entity::select('id','cpf_cnpj','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
     ->with(['otica', 'groups' => function($query){
-        $query->select('status','entity_group.created_at')->orderBy('entity_group.id','desc')->limit(2);
+        $query->select('status','entity_group.created_at')->orderBy('entity_group.id','desc');
 		}])
     ->orderBy('created_at', 'desc')->get();
 
@@ -127,7 +127,7 @@ class EntityController extends IOController
 
     $_old = Entity::find($id);
 
-    $upd = ['otica_id','nome','rg','sexo','local_trabalho','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','refs_comerciais','refs_pessoais'];
+    $upd = ['otica_id','nome','rg','sexo','local_trabalho','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','refs_comerciais','refs_pessoais','cod_cliente'];
 
     foreach($upd as $u)
       $_old->{$u} = optional($_new)->{$u};

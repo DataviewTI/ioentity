@@ -35,7 +35,7 @@ class EntityRequest extends IORequest
 
       return [
         'cpf_cnpj' => 'required|unique:entities,cpf_cnpj,'.$isUpdate.',id',
-        'cod_cliente' => 'required|unique:entities,cod_cliente,'.$isUpdate.',id',
+        'cod_cliente' => 'bail|nullable|unique:entities,cod_cliente,'.$isUpdate.',id',
       ]; 
     }
 

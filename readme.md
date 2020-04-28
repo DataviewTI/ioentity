@@ -9,13 +9,13 @@ Cadastro de entidades (clientes, fornecedores e funcionários) com endereço etc
 Laravel 7 or above, PHP >= 7.2.5
 
 ```sh
-composer require dataview/ioconfig dev-master
+composer require dataview/ioentity dev-master
 ```
 
 laravel 5.6 or below, PHP >= 7 and < 7.2.5
 
 ```sh
-composer require dataview/ioconfig 1.0.0
+composer require dataview/ioentity 1.0.0
 ```
 
 #### Laravel artisan installation
