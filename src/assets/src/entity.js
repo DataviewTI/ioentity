@@ -655,25 +655,12 @@ function view(self) {
       $("#otica_id").val(d.otica_id);
 
       $("#cpf_cnpj")
-        .val(d.cpf_cnpj)
+        .val(d.cpf_cnpj.length == 11 ? "000.000.000-00" : "00.000.000/0000-00")
+        .trigger("input")
         .attr("readonly", true)
-        .trigger("input");
+        .val($("#cpf_cnpj").masked(d.cpf_cnpj));
 
       $("#cod_cliente").val(d.cod_cliente);
-      // .attr("readonly", true)
-      // .trigger("input");
-
-      if ($("#cpf_cnpj").cleanVal().length == 11) {
-        self.fv[0]
-          .disableValidator("cpf_cnpj", "vat")
-          .enableValidator("cpf_cnpj", "id")
-          .revalidateField("cpf_cnpj");
-      } else {
-        self.fv[0]
-          .disableValidator("cpf_cnpj", "id")
-          // .enableValidator('cpf_cnpj', 'vat')
-          .revalidateField("cpf_cnpj");
-      }
 
       $("#nome").val(d.nome);
       // $('#status').val(d.status);
