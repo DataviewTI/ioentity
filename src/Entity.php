@@ -62,7 +62,7 @@ class Entity extends IOModel
     parent::boot(); 
 
     static::created(function (Entity $obj) {
-      if($obj->getAppend("has_images")){
+      if($obj->getAppend("hasImages")){
         $group = new Group([
           'group' => "Entity Avatar".$obj->id,
           'sizes' => $obj->getAppend("sizes")

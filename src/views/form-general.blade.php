@@ -8,10 +8,14 @@
 
 <div class = 'row'>
   <div class="col-xs-12 col-sm-2">
-    @include("IntranetOne::io.forms.form-images",[
-      "id" => "custom-dropzone",
-      "class"=>'entity-dz flex-nowrap'
-    ])
+    <div class = 'row d-flex'>
+      <div class="col-sm-12 d-flex p-0">
+          <div id = 'custom-dropzone' class = 'entity-dz w-100 d-flex justify-content-center dz-drop-files-here flex-wrap dropzone'>
+          </div>
+          @include('IntranetOne::io.components.dropzone.dropzone-infos-modal-default',[])
+        <input type = 'hidden' id = 'hasImages' name='hasImages' value='0' />
+      </div>
+    </div>
   </div>
   <div class="col-xs-12 col-sm-10 px-0 pl-3">
     <div class = 'row'>

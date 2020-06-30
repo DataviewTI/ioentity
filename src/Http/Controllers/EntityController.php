@@ -20,7 +20,7 @@ class EntityController extends IOController
   }
 
   function list() {
-    $query = Entity::select('id','cpf_cnpj','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at')
+    $query = Entity::select('id','cpf_cnpj','otica_id','nome','rg','sexo','estado_civil','dt_nascimento','telefone1','telefone2','celular1','celular2','email','zipCode','address','address2','city_id','observacao','group_id', 'created_at','cod_cliente')
     ->with(['otica', 'groups' => function($query){
         $query->select('status','entity_group.created_at')->orderBy('entity_group.id','desc');
 		}])
@@ -54,7 +54,7 @@ class EntityController extends IOController
 
     if($request->sizes!= null){
       $obj->setAppend("sizes",$request->sizes);
-      $obj->setAppend("has_images",$request->has_images);
+      $obj->setAppend("hasImages",$request->hasImages);
       $obj->save();
     }
 

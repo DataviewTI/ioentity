@@ -10,7 +10,7 @@ class CreateEntityTable extends Migration
       Schema::create('entities', function (Blueprint $table) {
         $table->increments('id');
         $table->char('cpf_cnpj', 14)->unique();
-        $table->char('cod_cliente', 14)->unique();
+        $table->char('cod_cliente', 14)->unique()->nullable();
         $table->integer('otica_id')->unsigned();
         $table->integer('group_id')->unsigned()->nullable();
         // $table->enum('status', ['Ativo', 'Inativo', 'Bloqueado','De Risco','Avalisado'])->default('Ativo');

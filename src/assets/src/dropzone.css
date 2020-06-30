@@ -4,18 +4,19 @@
 } */
 
 .entity-dz.dropzone {
-  overflow-y: hidden!important;
+  overflow-y: hidden !important;
+  /* border: 1px red solid !important; */
+  min-height: 220px !important;
 }
 
 .entity-dz.dz-drop-files-here.dropzone.dz-clickable {
-  background: url('/io/images/entity/entity-avatar.png') no-repeat center 10px;
-  background-size:90%;
+  background: url("/io/images/entity/entity-avatar.png") no-repeat center 10px;
+  background-size: 85%;
 }
 
-.entity-dz .dz-image-preview{
-  margin:0!important;
+.entity-dz .dz-image-preview {
+  margin: 0 !important;
 }
-
 
 /* .dropzone.dz-clickable:hover {
   border-color: #aaa !important;

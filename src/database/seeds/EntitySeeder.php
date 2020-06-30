@@ -17,7 +17,7 @@ class EntitySeeder extends Seeder
   {
     //cria o serviço se ele não existe
     if (!Service::where('service', 'Entity')->exists()) {
-        Service::insert([
+        $service = Service::create([
             'service' => "Entity",
             'alias' => 'entity',
             'trans' => 'Clientes',

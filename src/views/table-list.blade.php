@@ -61,6 +61,7 @@
 			["title" => "CPF/CNPJ"],
 			["title" => "Origem"],
 			["title" => "Celular"],
+			["title" => "Codigo"],
 			["title" => "Cadastro"],
 			["title" => "S"],
 			["title" => "Ações"]
