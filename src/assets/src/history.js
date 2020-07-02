@@ -8,15 +8,22 @@ new IOService(
   function(self) {
     setTimeout(() => {
       self.tabs["historico"].tab.on("shown.bs.tab", (e) => {
+        console.log("foi??", IO.active.dt);
+        IO.active.dt.search("").draw();
         IO.active = self;
-        self.dt.ajax.url(
-          `${self.path}/history/list/${IO.services.entity.toView &&
-            IO.services.entity.toView.id}`
-        );
-        self.dt.ajax.reload();
-        self.dt.columns.adjust();
+        self.dt.ajax
+          .url(
+            `${self.path}/history/list/${IO.services.entity.toView &&
+              IO.services.entity.toView.id}`
+          )
+          .load(function(d) {
+            console.log("no load", d);
+            self.dt.ajax.reload();
+            // self.dt.draw();
+            self.dt.columns.adjust().draw();
+          }, false);
       });
-    });
+    }, 500);
 
     $("#status").on("change", function(e) {
       const val = $(e.currentTarget).val();
@@ -74,11 +81,10 @@ new IOService(
     //Datatables initialization
     self.dt = $("#hist-table")
       .DataTable({
-        ajax: null,
         aaSorting: [[1, "desc"]],
         initComplete: function() {
           let api = this.api();
-          $.fn.dataTable.defaults.initComplete(this);
+          $.fn.dataTable.defaults.initComplete(this, $("#ft_hist_search"));
         },
         footerCallback: function(row, data, start, end, display) {},
         columns: [

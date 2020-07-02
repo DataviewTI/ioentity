@@ -2,7 +2,7 @@
 		<div class="col-sm-12 col-xs-12">
 			<div class="form-group">
         <label for = 'subtitulo' class = 'bmd-label-static'><i class = 'ico ico-filter'></i> Palavra Chave</label>
-        <input type = 'text' class = 'form-control form-control-lg' name ='ft_search' id = 'ft_search' />
+        <input type = 'text' class = 'form-control form-control-lg' name ='ft_hist_search' id = 'ft_hist_search' />
 			</div>
 		</div>
     
