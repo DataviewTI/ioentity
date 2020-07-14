@@ -136,7 +136,8 @@
                 "view"=>"Entity::form-parts.details",
                 "params"=>[
                 ],
-              ]            ]
+              ]            
+            ]
           ])
           @endcomponent
       </div>

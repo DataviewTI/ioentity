@@ -3,6 +3,7 @@ namespace Dataview\IOEntity;
 
 use Dataview\IntranetOne\IOModel;
 use Dataview\IntranetOne\Group;
+use Dataview\IntranetOne\Service;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Entity extends IOModel
@@ -65,7 +66,8 @@ class Entity extends IOModel
       if($obj->getAppend("hasImages")){
         $group = new Group([
           'group' => "Entity Avatar".$obj->id,
-          'sizes' => $obj->getAppend("sizes")
+          'sizes' => $obj->getAppend("sizes"),
+          'service_id' => Service::where('alias','entity')->value('id')
         ]);
         $group->save();
         $obj->group()->associate($group)->save();
